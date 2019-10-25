@@ -1,0 +1,10 @@
+package vwmin.coolq.function.pixiv.entity;
+
+import lombok.Data;
+
+import java.io.Serializable;
+
+@Data
+public class IllustResponse implements Serializable {
+    private ListIllustResponse.IllustsBean illust;
+}
