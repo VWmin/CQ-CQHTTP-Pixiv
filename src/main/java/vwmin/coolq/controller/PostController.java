@@ -68,12 +68,16 @@ public class PostController {
 
 
         Long user_id = message.getUser_id();
+        if(sessionMap.get(user_id) != null){
+            sessionMap.get(user_id).update(((HasId)message).getId(), message.getMessage_type(), message.getArgs());
+
+        }else{ //如果map中没有找到id-->session
+            BaseSession session = creatSession(message);
+            if(session == null) return null;
+            argsDispatcherMap.get(ArgsDispatcherType.PIXIV.getKey()).setPostMessage(session).send();
+        }
 
 
-        //如果map中没有找到id-->session
-        BaseSession session = creatSession(message);
-        if(session == null) return null;
-        argsDispatcherMap.get(ArgsDispatcherType.PIXIV.getKey()).setPostMessage(session).send();
 
 //        if("rank".equals(message.getArgs()[0])){
 //            RankSession rankSession = new RankSession(((HasId) message).getId(), message.getMessage_type());

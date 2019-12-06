@@ -20,7 +20,7 @@ package vwmin.coolq.session;
  *             有：
  * 下文（消除）：不再需要的session怎么把自己从map中除掉？给自己添加标记，每次处理命令之后，去掉已确认关闭的session
  */
-public class BaseSession {
+public abstract class BaseSession {
 
     Long source_id;
     String message_type;
@@ -37,6 +37,8 @@ public class BaseSession {
         this.message_type = message_type;
         this.args = args;
     }
+
+    abstract public void update(Long source_id, String message_type, String[] args);
 
 }
 

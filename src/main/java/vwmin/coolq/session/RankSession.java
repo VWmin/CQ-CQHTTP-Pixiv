@@ -1,8 +1,6 @@
 package vwmin.coolq.session;
 
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.Options;
+import org.apache.commons.cli.*;
 import vwmin.coolq.function.pixiv.util.IllustsResponseConsumer;
 
 
@@ -32,10 +30,18 @@ public class RankSession extends BaseSession{
         if(options == null){
             options = new Options();
             options.addOption("d", true, "可选，接收yyyy-MM-dd格式日期，指定特定日期的排行");
+            options.addOption("s", "可选，指定参数时最简化显示，即不显示图片");
         }
     }
 
-    public void check(Long source_id, String message_type, String[] args){
+    /**
+     * 当有已存在的session时，调用此函数进行session更新
+     * @param source_id
+     * @param message_type
+     * @param args
+     */
+    @Override
+    public void update(Long source_id, String message_type, String[] args){
         if(before == null){ //无冲突
             before = STEP_1.clone();
         }else{ //可能有冲突
@@ -66,7 +72,47 @@ public class RankSession extends BaseSession{
     }
 
 
+    public void checkArgs(){
+        //检查命令
 
+        boolean isNext = false;
+        boolean isSmall = false;
+        String mode = RANK_MODE_LIST[0];
+        String date = null;
+        try {
+            CommandLine cmd = parser.parse(options, args);
+            if(cmd.hasOption("s")){
+                isSmall = true;
+            }
+
+            if(args[0].equals("next")){
+                isNext = true;
+
+            }else if(args[0].equals("rank")){
+                if(args.length == 1){
+                    throw new ParseException("rank命令未指定任何参数");
+                }
+                if(cmd.hasOption("d")){
+                    date = cmd.getOptionValue("d");
+                }
+                if(isARankMode(args[args.length-1])) {
+                    mode = args[args.length-1];
+                }
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        //执行命令
+    }
+
+    private boolean isARankMode(String arg){
+        for(String mode : RANK_MODE_LIST){
+            if(mode.equals(arg))
+                return true;
+        }
+        return false;
+    }
 
 
 
