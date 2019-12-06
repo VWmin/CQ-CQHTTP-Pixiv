@@ -11,4 +11,7 @@ public interface PixivService {
     public IllustResponse getIllustById(Integer illust_id);
 
     public UserResponse getUserById(Integer user_id);
+
+    public ListIllustResponse getIllustByWord(String word, String sort, String search_target);
+
 }

@@ -8,6 +8,8 @@ import vwmin.coolq.entity.*;
 import vwmin.coolq.enums.ArgsDispatcherType;
 import vwmin.coolq.function.pixiv.service.ScheduleTask;
 import vwmin.coolq.service.ArgsDispatcher;
+import vwmin.coolq.session.BaseSession;
+import vwmin.coolq.session.RankSession;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.*;
@@ -29,7 +31,8 @@ public class PostController {
     private final ScheduleTask scheduleTask;
 
     private static
-    Set<Long> saucenaoSession = new TreeSet<>();
+    Map<Long, BaseSession> sessionMap = new HashMap<>();
+//    Set<Long> saucenaoSession = new TreeSet<>();
 
     public PostController(Map<String, ArgsDispatcher> argsDispatcherMap,
                           ScheduleTask scheduleTask) {
@@ -63,24 +66,47 @@ public class PostController {
         log.info("收到上报数据 >> "+message);
 
 
-        if("rank".equals(message.getArgs()[0])){
-            argsDispatcherMap.get(ArgsDispatcherType.PIXIV.getKey()).setPostMessage(message).send();
-        }else if("search".equals(message.getArgs()[0])){
-            // 收到来自用户的搜图请求，添加状态为等待
-            saucenaoSession.add(((HasId) message).getId());
-        }else if(message.getArgs()[0].contains("CQ:image") && saucenaoSession.contains(((HasId) message).getId())){
-            //处理搜图请求，去除状态
-            saucenaoSession.remove(((HasId) message).getId());
-            argsDispatcherMap.get(ArgsDispatcherType.SAUCENAO.getKey()).setPostMessage(message).send();
-        }else if("download".equals(message.getArgs()[0])){
-            argsDispatcherMap.get(ArgsDispatcherType.DOWNLOAD.getKey()).setPostMessage(message).send();
-        }else if("detail".equals(message.getArgs()[0])){
-            argsDispatcherMap.get(ArgsDispatcherType.PIXIV.getKey()).setPostMessage(message).send();
-        }else if("user".equals(message.getArgs()[0])){
-            argsDispatcherMap.get(ArgsDispatcherType.PIXIV.getKey()).setPostMessage(message).send();
+
+        Long user_id = message.getUser_id();
+
+
+        //如果map中没有找到id-->session
+        BaseSession session = creatSession(message);
+        if(session == null) return null;
+        argsDispatcherMap.get(ArgsDispatcherType.PIXIV.getKey()).setPostMessage(session).send();
+
+//        if("rank".equals(message.getArgs()[0])){
+//            RankSession rankSession = new RankSession(((HasId) message).getId(), message.getMessage_type());
+//            argsDispatcherMap.get(ArgsDispatcherType.PIXIV.getKey()).setPostMessage(rankSession).send();
+//        }else if("word".equals(message.getArgs()[0])){
+//            argsDispatcherMap.get(ArgsDispatcherType.PIXIV.getKey()).setPostMessage(message).send();
+//        }
+//        else if("search".equals(message.getArgs()[0])){
+//            // 收到来自用户的搜图请求，添加状态为等待
+//            saucenaoSession.add(((HasId) message).getId());
+//        }else if(message.getArgs()[0].contains("CQ:image") && saucenaoSession.contains(((HasId) message).getId())){
+//            //处理搜图请求，去除状态
+//            saucenaoSession.remove(((HasId) message).getId());
+//            argsDispatcherMap.get(ArgsDispatcherType.SAUCENAO.getKey()).setPostMessage(message).send();
+//        }else if("download".equals(message.getArgs()[0])){
+//            argsDispatcherMap.get(ArgsDispatcherType.DOWNLOAD.getKey()).setPostMessage(message).send();
+//        }else if("detail".equals(message.getArgs()[0])){
+//            argsDispatcherMap.get(ArgsDispatcherType.PIXIV.getKey()).setPostMessage(message).send();
+//        }else if("user".equals(message.getArgs()[0])){
+//            argsDispatcherMap.get(ArgsDispatcherType.PIXIV.getKey()).setPostMessage(message).send();
+//        }
+
+
+        return null;
+    }
+
+    private BaseSession creatSession(BaseMessage message) {
+        String message_type = message.getMessage_type();
+        Long source_id = ((HasId) message).getId();
+        switch (message.getArgs()[0]){
+            case "rank":
+                return new RankSession(source_id, message_type, message.getArgs());
         }
-
-
         return null;
     }
 

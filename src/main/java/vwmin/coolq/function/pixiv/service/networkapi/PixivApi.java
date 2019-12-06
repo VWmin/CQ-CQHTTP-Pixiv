@@ -19,4 +19,8 @@ public interface PixivApi {
 
     @GET("/user/detail")
     public Response<UserResponse> getUserById(@Query("user_id") String id);
+
+    @GET("/search/illust")
+    public Response<ListIllustResponse> getIllustByWord(String word, String sort, String search_target);
+
 }

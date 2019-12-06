@@ -11,6 +11,8 @@ import vwmin.coolq.network.MyCallAdapterFactory;
 import vwmin.coolq.network.NetworkClient;
 import vwmin.coolq.network.Response;
 
+import java.sql.ResultSet;
+
 @Service
 @Slf4j
 public class PixivServiceImpl implements PixivService{
@@ -41,6 +43,12 @@ public class PixivServiceImpl implements PixivService{
     @Override
     public UserResponse getUserById(Integer user_id) {
         Response<UserResponse> response = pixivApi.getUserById(user_id+"");
+        return response.getResponse();
+    }
+
+    @Override
+    public ListIllustResponse getIllustByWord(String word, String sort, String search_target) {
+        Response<ListIllustResponse> response = pixivApi.getIllustByWord(word, sort, search_target);
         return response.getResponse();
     }
 
