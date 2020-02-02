@@ -34,30 +34,5 @@ public class CQClientServiceImpl implements CQClientService {
         log.info("消息发送响应 >> "+res);
     }
 
-    @Override
-    public SendMessageEntity creatMessageEntity(String message_type, Long id, List<MessageSegment> messageSegments) {
-        Assert.notNull(messageSegments, "MessageSegments could not be null.");
-        Assert.notNull(message_type, "message_type could not be null.");
-        Assert.notNull(id, "QQ id could not be null.");
-
-        SendMessageEntity send = new SendMessageEntity();
-        send.setMessage_type(message_type);
-        send.setAuto_escape(true);
-        send.setMessage(messageSegments);
-
-        switch (message_type){
-            case "private":
-                send.setUser_id(id);
-                break;
-            case "group":
-                send.setGroup_id(id);
-                break;
-            case "discuss":
-                send.setDiscuss_id(id);
-                break;
-        }
-
-        return send;
-    }
 
 }

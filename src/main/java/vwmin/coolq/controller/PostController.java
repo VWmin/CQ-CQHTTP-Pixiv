@@ -10,6 +10,9 @@ import vwmin.coolq.function.pixiv.service.ScheduleTask;
 import vwmin.coolq.service.ArgsDispatcher;
 import vwmin.coolq.session.BaseSession;
 import vwmin.coolq.session.RankSession;
+import vwmin.coolq.session.SearchSession;
+import vwmin.coolq.session.WordSession;
+import vwmin.coolq.util.StringUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.*;
@@ -65,17 +68,50 @@ public class PostController {
         Assert.notNull(message, "message解析错误，或者message_type=discuss.");
         log.info("收到上报数据 >> "+message);
 
+        //todo: 把这个整合进session里，现在先管上线
+        if (message.getMessage().contains("一张色图")){
+            argsDispatcherMap.get(ArgsDispatcherType.SETU.getKey()).setPostMessage(message).send();
+            return null;
+        }
 
+        for (Long key : sessionMap.keySet()){
+            if(sessionMap.get(key).isClosed()){
+                sessionMap.remove(key);
+            }
+        }
 
         Long user_id = message.getUser_id();
         if(sessionMap.get(user_id) != null){
-            sessionMap.get(user_id).update(((HasId)message).getId(), message.getMessage_type(), message.getArgs());
+            BaseSession session = sessionMap.get(user_id);
+            if(message.getArgs()[0].contains("CQ:image")){ //有任意会话存在时，同用户在任何地方发图片都会触发
+                if(session.getBelong() == ArgsDispatcherType.SAUCENAO){ //那么让图片指令只指向saucenao
+                    String url = StringUtil.matchUrl(message.getMessage());
+                    session.update(((HasId)message).getId(), message.getMessage_type(), StringUtil.append(message.getArgs(), url));
+                    argsDispatcherMap.get(session.getBelong().getKey()).setSession(session).send();
+                }else{
+                    return null;
+                }
+            }
+            if(getBelong(message.getArgs()[0]) == session.getBelong()){ //会话存在时，新命令属于原会话类型
+                session.update(((HasId)message).getId(), message.getMessage_type(), message.getArgs());
+                argsDispatcherMap.get(session.getBelong().getKey()).setSession(session).send();
+            }else{ //会话存在时，新命令不属于原会话类型
+                sessionMap.remove(user_id);
+                session = creatSession(message);
+                if(session == null) return null;
+                sessionMap.put(user_id, session);
+                argsDispatcherMap.get(Objects.requireNonNull(getBelong(message.getArgs()[0])).getKey()).setSession(session).send();
+            }
 
         }else{ //如果map中没有找到id-->session
             BaseSession session = creatSession(message);
             if(session == null) return null;
-            argsDispatcherMap.get(ArgsDispatcherType.PIXIV.getKey()).setPostMessage(session).send();
+            sessionMap.put(user_id, session);
+            argsDispatcherMap.get(Objects.requireNonNull(getBelong(message.getArgs()[0])).getKey()).setSession(session).send();
+
         }
+
+
 
 
 
@@ -104,13 +140,39 @@ public class PostController {
         return null;
     }
 
+    //新创建的命令需要在这里与分发器进行关联
+    private ArgsDispatcherType getBelong(String arg0) {
+        String[] pixivArgs = {"rank", "word", "next"};
+        String[] saucenaoArgs = {"search"};
+        for(String per : pixivArgs){
+            if(per.equals(arg0)){
+                return ArgsDispatcherType.PIXIV;
+            }
+        }
+        for(String per : saucenaoArgs){
+            if(per.equals(arg0)){
+                return ArgsDispatcherType.SAUCENAO;
+            }
+        }
+        return null;
+    }
+
+    //新创建的session需要才这里与命令进行关联
     private BaseSession creatSession(BaseMessage message) {
+        Long user_id = message.getUser_id();
+        Long source_id = ((HasId)message).getId();
         String message_type = message.getMessage_type();
-        Long source_id = ((HasId) message).getId();
+        String[] args = message.getArgs();
+
         switch (message.getArgs()[0]){
             case "rank":
-                return new RankSession(source_id, message_type, message.getArgs());
+                return new RankSession(user_id, source_id, message_type, args);
+            case "word":
+                return new WordSession(user_id, source_id, message_type, args);
+            case "search":
+                return new SearchSession(user_id, source_id, message_type, args);
         }
+
         return null;
     }
 

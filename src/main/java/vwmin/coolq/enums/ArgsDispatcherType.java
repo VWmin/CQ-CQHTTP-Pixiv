@@ -3,7 +3,7 @@ package vwmin.coolq.enums;
 public enum  ArgsDispatcherType {
     PIXIV("pixivArgsDispatcher"),
     SAUCENAO("saucenaoDispatcher"),
-    DOWNLOAD("downloadDispatcher");
+    SETU("setuArgsDispatcher");
 
     private String key;
 

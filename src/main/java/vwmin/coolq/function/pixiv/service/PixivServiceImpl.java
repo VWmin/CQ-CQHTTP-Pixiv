@@ -10,6 +10,7 @@ import vwmin.coolq.function.pixiv.service.networkapi.PixivApi;
 import vwmin.coolq.network.MyCallAdapterFactory;
 import vwmin.coolq.network.NetworkClient;
 import vwmin.coolq.network.Response;
+import vwmin.coolq.util.StringUtil;
 
 import java.sql.ResultSet;
 
@@ -49,7 +50,17 @@ public class PixivServiceImpl implements PixivService{
     @Override
     public ListIllustResponse getIllustByWord(String word, String sort, String search_target) {
         Response<ListIllustResponse> response = pixivApi.getIllustByWord(word, sort, search_target);
-        return response.getResponse();
+        ListIllustResponse r = response.getResponse();
+        log.info("response for '/search/illust' >> "+ StringUtil.getDigest(r.toString()));
+        return r;
+    }
+
+    @Override
+    public ListIllustResponse getNext(String next_url) {
+        Response<ListIllustResponse> response = pixivApi.getNext(next_url);
+        ListIllustResponse r = response.getResponse();
+        log.info("response for '/next' >> "+ StringUtil.getDigest(r.toString()));
+        return r;
     }
 
 

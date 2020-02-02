@@ -15,4 +15,20 @@ public class SendMessageEntity {
 
     private Boolean auto_escape;
 
+    public SendMessageEntity(String message_type, Long source_id, List<MessageSegment> message) {
+        this.message_type = message_type;
+        this.message = message;
+        switch (message_type){
+            case "private":
+                user_id = source_id;
+                break;
+            case "group":
+                group_id = source_id;
+                break;
+            case "discuss":
+                discuss_id = source_id;
+                break;
+        }
+    }
+
 }

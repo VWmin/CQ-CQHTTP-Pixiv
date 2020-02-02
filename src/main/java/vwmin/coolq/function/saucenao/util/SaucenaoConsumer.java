@@ -15,12 +15,12 @@ import java.util.List;
 @Slf4j
 public class SaucenaoConsumer {
     private final SauceNAOEntity sauceNAOEntity;
-    private final BaseMessage postMessage;
-    private final PixivService pixivService;
-    public SaucenaoConsumer(SauceNAOEntity sauceNAOEntity, BaseMessage postMessage, PixivService pixivService){
+    private final Long user_id;
+//    private final PixivService pixivService;
+    public SaucenaoConsumer(SauceNAOEntity sauceNAOEntity, Long user_id){
         this.sauceNAOEntity = sauceNAOEntity;
-        this.postMessage = postMessage;
-        this.pixivService = pixivService;
+        this.user_id = user_id;
+//        this.pixivService = pixivService;
     }
 
 
@@ -54,23 +54,26 @@ public class SaucenaoConsumer {
 //            author = one.getData().getCreator() + "";
 //        }
 
+        // 通用
         String fileName = timeStamp+imageType;
         String fileUrl = one.getHeader().getThumbnail();
+
+
         if(one.getHeader().getIndex_id() == 5){ //Pixiv
-            IllustResponse illustById = pixivService.getIllustById(one.getData().getPixiv_id());
-            if(illustById!=null && illustById.getIllust()!=null){
-                ListIllustResponse.IllustsBean illust = illustById.getIllust();
-                fileName = illust.getId() + IllustUtil.getImgType(illust);
-                fileUrl = IllustUtil.getMetaSinglePage(illust);
-            }
+//            IllustResponse illustById = pixivService.getIllustById(one.getData().getPixiv_id());
+//            if(illustById!=null && illustById.getIllust()!=null){
+//                ListIllustResponse.IllustsBean illust = illustById.getIllust();
+//                fileName = illust.getId() + IllustUtil.getImgType(illust);
+//                fileUrl = IllustUtil.getMetaSinglePage(illust);
+//            }
         }
 
         if(similarity < 50){
-            builder.addAtSegment(postMessage.getUser_id())
+            builder.addAtSegment(user_id)
                     .addTextSegment("[找到图片相似度过低(" + one.getHeader().getSimilarity() + "%)，结果不给康了嗷，感兴趣请戳↓]\n")
                     .addTextSegment(one.getData().getExt_urls().get(0));
         }else{
-            builder.addAtSegment(postMessage.getUser_id())
+            builder.addAtSegment(user_id)
                     .addTextSegment("[找到图片相似度：" + one.getHeader().getSimilarity() + "%]\n")
                     .addTextSegment("[" + title + "]  by  [" + author + "]")
                     .addImageSegment(fileName, fileUrl);

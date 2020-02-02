@@ -11,8 +11,7 @@ import vwmin.coolq.network.annotation.*;
 
 public interface PixivApi {
     @GET("/illust/ranking")
-    public Response<ListIllustResponse> getRank(@Query("mode") String mode,
-                                      @Query("date") String date);
+    public Response<ListIllustResponse> getRank(@Query("mode") String mode, @Query("date") String date);
 
     @GET("/illust/detail")
     public Response<IllustResponse> getIllustById(@Query("illust_id") String id);
@@ -21,6 +20,9 @@ public interface PixivApi {
     public Response<UserResponse> getUserById(@Query("user_id") String id);
 
     @GET("/search/illust")
-    public Response<ListIllustResponse> getIllustByWord(String word, String sort, String search_target);
+    public Response<ListIllustResponse> getIllustByWord(@Query("word") String word, @Query("sort") String sort, @Query("search_type") String search_target);
+
+    @GET("/next")
+    public Response<ListIllustResponse> getNext(@Query("next_url") String next_url);
 
 }

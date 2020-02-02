@@ -7,5 +7,6 @@ import vwmin.coolq.session.BaseSession;
 import java.util.Map;
 
 public interface ArgsDispatcher {
-    MessageSender setPostMessage(BaseSession session);
+    MessageSender setPostMessage(BaseMessage postMessage);
+    MessageSender setSession(BaseSession session);
 }
