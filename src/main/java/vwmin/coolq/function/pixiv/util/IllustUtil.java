@@ -3,7 +3,7 @@ package vwmin.coolq.function.pixiv.util;
 import vwmin.coolq.function.pixiv.entity.ListIllustResponse;
 
 public class IllustUtil {
-    public static String getMetaSinglePage(ListIllustResponse.IllustsBean illust){
+    static String getMetaSinglePage(ListIllustResponse.IllustsBean illust){
         if(illust.getPage_count() > 1){
             return illust.getMeta_pages().get(0).getImage_urls().getOriginal();
         }else{
@@ -11,7 +11,7 @@ public class IllustUtil {
         }
     }
 
-    public static String getImgType(ListIllustResponse.IllustsBean illust){
+    static String getImgType(ListIllustResponse.IllustsBean illust){
         if(illust.getPage_count() > 1){
             String str = illust.getMeta_pages().get(0).getImage_urls().getOriginal();
             return str.substring(str.length()-4);

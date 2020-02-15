@@ -12,8 +12,6 @@ public class CoolqApplication  extends SpringBootServletInitializer {
 
     public static void main(String[] args) {
         SpringApplication.run(CoolqApplication.class, args);
-//        ConfigurableApplicationContext app = SpringApplication.run(CoolqApplication.class, args);
-//        SpringUtil.setApplicationContext(app);
     }
 
     @Override

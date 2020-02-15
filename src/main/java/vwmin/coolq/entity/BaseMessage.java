@@ -22,7 +22,9 @@ public class BaseMessage {
 
     private String[] args;
     public String[] getArgs(){
-        if(args == null) args = raw_message.split("\\s+");
+        if(args == null) {
+            args = message.split("\\s+");
+        }
         return args;
     }
 }

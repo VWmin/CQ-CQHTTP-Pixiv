@@ -16,7 +16,7 @@ import java.nio.channels.OverlappingFileLockException;
 @Slf4j
 public class DownloadUtil {
 
-    public static boolean downloadPixivImage(String filePath, String fileName, String url){
+    public static boolean downloadPixivImage(String filePath, String fileName, String url) throws IOException {
 
         CloseableHttpClient client = HttpClients.createDefault();
         HttpGet get = new HttpGet(url);
@@ -32,8 +32,7 @@ public class DownloadUtil {
             return true;
         } catch (IOException e) {
             log.warn("图片下载或保存时出现错误");
-            e.printStackTrace();
-            return false;
+            throw e;
         }
 
     }

@@ -1,3 +1,6 @@
 # CQ-CQHTTP-Pixiv
 
-// 2019-10-25 to咕: 明天一定写readme
+Todo:
+    
+* 将命令模式整合进Session
+

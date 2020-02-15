@@ -26,12 +26,17 @@ abstract class ParameterHandler<T> {
 
     static final class Query extends ParameterHandler<String> {
         private final String queryName;
-        public Query(String queryName){
+        private final boolean required;
+        public Query(String queryName, boolean required){
             this.queryName = queryName;
+            this.required = required;
         }
 
         @Override
         public void apply(List<BasicNameValuePair> pairs, String value) {
+            if (!required && value == null){
+                return;
+            }
             pairs.add(new BasicNameValuePair(queryName, value));
         }
     }

@@ -7,18 +7,19 @@ import org.springframework.web.bind.annotation.*;
 import vwmin.coolq.entity.*;
 import vwmin.coolq.enums.ArgsDispatcherType;
 import vwmin.coolq.function.pixiv.service.ScheduleTask;
+import vwmin.coolq.function.setu.SetuSession;
 import vwmin.coolq.service.ArgsDispatcher;
 import vwmin.coolq.session.BaseSession;
-import vwmin.coolq.session.RankSession;
-import vwmin.coolq.session.SearchSession;
-import vwmin.coolq.session.WordSession;
-import vwmin.coolq.util.StringUtil;
+import vwmin.coolq.function.pixiv.RankSession;
+import vwmin.coolq.function.saucenao.SearchSession;
+import vwmin.coolq.function.pixiv.WordSession;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.*;
 import java.net.URLDecoder;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -26,7 +27,9 @@ import java.util.regex.Pattern;
 @Slf4j
 @RestController
 public class PostController {
-    private static final Gson gson = new Gson();
+    private static final Gson GSON = new Gson();
+    private static final Pattern REGEX_MESSAGE_TYPE = Pattern.compile("\"message_type\":\".*?\"");
+    private static final Pattern REGEX_POST_TYPE = Pattern.compile("\"post_type\":\".*?\"");
 
     private final
     Map<String, ArgsDispatcher> argsDispatcherMap;
@@ -34,8 +37,8 @@ public class PostController {
     private final ScheduleTask scheduleTask;
 
     private static
-    Map<Long, BaseSession> sessionMap = new HashMap<>();
-//    Set<Long> saucenaoSession = new TreeSet<>();
+    Map<Long, BaseSession> sessionMap = new ConcurrentHashMap<>();
+
 
     public PostController(Map<String, ArgsDispatcher> argsDispatcherMap,
                           ScheduleTask scheduleTask) {
@@ -58,21 +61,17 @@ public class PostController {
         }
 
         // 排除非message类型的上报
-        String post_type = getPostType(requestBody);
-        if(!"message".equals(post_type)){
+        String postType = getPostType(requestBody);
+        if(!"message".equals(postType)){
             return null;
         }
 
         // 包装收到的消息
         BaseMessage message = processMessage(requestBody);
         Assert.notNull(message, "message解析错误，或者message_type=discuss.");
+        message.setArgs(arg0Preprocess(message.getArgs()));
         log.info("收到上报数据 >> "+message);
 
-        //todo: 把这个整合进session里，现在先管上线
-        if (message.getMessage().contains("一张色图")){
-            argsDispatcherMap.get(ArgsDispatcherType.SETU.getKey()).setPostMessage(message).send();
-            return null;
-        }
 
         for (Long key : sessionMap.keySet()){
             if(sessionMap.get(key).isClosed()){
@@ -80,70 +79,54 @@ public class PostController {
             }
         }
 
-        Long user_id = message.getUser_id();
-        if(sessionMap.get(user_id) != null){
-            BaseSession session = sessionMap.get(user_id);
-            if(message.getArgs()[0].contains("CQ:image")){ //有任意会话存在时，同用户在任何地方发图片都会触发
-                if(session.getBelong() == ArgsDispatcherType.SAUCENAO){ //那么让图片指令只指向saucenao
-                    String url = StringUtil.matchUrl(message.getMessage());
-                    session.update(((HasId)message).getId(), message.getMessage_type(), StringUtil.append(message.getArgs(), url));
-                    argsDispatcherMap.get(session.getBelong().getKey()).setSession(session).send();
-                }else{
-                    return null;
-                }
-            }
-            if(getBelong(message.getArgs()[0]) == session.getBelong()){ //会话存在时，新命令属于原会话类型
+        final Long userId = message.getUser_id();
+        final String arg0 = message.getArgs()[0];
+        final String[] args = message.getArgs();
+        if(sessionMap.get(userId) != null){
+            //存在会话
+            BaseSession session = sessionMap.get(userId);
+            if(getBelong(arg0) == session.getBelong()){
+                //会话存在时，新命令属于原会话类型
                 session.update(((HasId)message).getId(), message.getMessage_type(), message.getArgs());
-                argsDispatcherMap.get(session.getBelong().getKey()).setSession(session).send();
-            }else{ //会话存在时，新命令不属于原会话类型
-                sessionMap.remove(user_id);
+                argsDispatcherMap.get(session.getBelong().getKey()).createSender(session, args).send();
+            }else{
+                //会话存在时，新命令不属于原会话类型
                 session = creatSession(message);
-                if(session == null) return null;
-                sessionMap.put(user_id, session);
-                argsDispatcherMap.get(Objects.requireNonNull(getBelong(message.getArgs()[0])).getKey()).setSession(session).send();
+                sessionMap.replace(userId, session);
+                argsDispatcherMap.get(getBelong(arg0).getKey()).createSender(session, args).send();
             }
 
-        }else{ //如果map中没有找到id-->session
+        }else{
+            //如果map中没有找到id-->session
             BaseSession session = creatSession(message);
-            if(session == null) return null;
-            sessionMap.put(user_id, session);
-            argsDispatcherMap.get(Objects.requireNonNull(getBelong(message.getArgs()[0])).getKey()).setSession(session).send();
+            if(session == null) {
+                return null;
+            }
+            sessionMap.put(userId, session);
+            argsDispatcherMap.get(getBelong(arg0).getKey()).createSender(session, args).send();
 
         }
-
-
-
-
-
-//        if("rank".equals(message.getArgs()[0])){
-//            RankSession rankSession = new RankSession(((HasId) message).getId(), message.getMessage_type());
-//            argsDispatcherMap.get(ArgsDispatcherType.PIXIV.getKey()).setPostMessage(rankSession).send();
-//        }else if("word".equals(message.getArgs()[0])){
-//            argsDispatcherMap.get(ArgsDispatcherType.PIXIV.getKey()).setPostMessage(message).send();
-//        }
-//        else if("search".equals(message.getArgs()[0])){
-//            // 收到来自用户的搜图请求，添加状态为等待
-//            saucenaoSession.add(((HasId) message).getId());
-//        }else if(message.getArgs()[0].contains("CQ:image") && saucenaoSession.contains(((HasId) message).getId())){
-//            //处理搜图请求，去除状态
-//            saucenaoSession.remove(((HasId) message).getId());
-//            argsDispatcherMap.get(ArgsDispatcherType.SAUCENAO.getKey()).setPostMessage(message).send();
-//        }else if("download".equals(message.getArgs()[0])){
-//            argsDispatcherMap.get(ArgsDispatcherType.DOWNLOAD.getKey()).setPostMessage(message).send();
-//        }else if("detail".equals(message.getArgs()[0])){
-//            argsDispatcherMap.get(ArgsDispatcherType.PIXIV.getKey()).setPostMessage(message).send();
-//        }else if("user".equals(message.getArgs()[0])){
-//            argsDispatcherMap.get(ArgsDispatcherType.PIXIV.getKey()).setPostMessage(message).send();
-//        }
-
 
         return null;
     }
 
-    //新创建的命令需要在这里与分发器进行关联
+
+    private String[] arg0Preprocess(String[] args) {
+        if (args[0].contains("一张色图")){
+            args[0] = "setu";
+        } else if (args[0].contains("search")){
+            String arg0 = args[0];
+            args = new String[]{arg0.substring(0, 6), arg0.substring(6)};
+        }
+        return args;
+    }
+
+    /**新创建的命令需要在这里与分发器进行关联*/
     private ArgsDispatcherType getBelong(String arg0) {
         String[] pixivArgs = {"rank", "word", "next"};
         String[] saucenaoArgs = {"search"};
+        String[] setuArgs = {"setu"};
+
         for(String per : pixivArgs){
             if(per.equals(arg0)){
                 return ArgsDispatcherType.PIXIV;
@@ -154,23 +137,31 @@ public class PostController {
                 return ArgsDispatcherType.SAUCENAO;
             }
         }
-        return null;
+        for (String per :setuArgs){
+            if (per.equals(arg0)){
+                return ArgsDispatcherType.SETU;
+            }
+        }
+        return ArgsDispatcherType.NULL;
     }
 
-    //新创建的session需要才这里与命令进行关联
+    /**新创建的session需要才这里与命令进行关联*/
     private BaseSession creatSession(BaseMessage message) {
-        Long user_id = message.getUser_id();
-        Long source_id = ((HasId)message).getId();
-        String message_type = message.getMessage_type();
-        String[] args = message.getArgs();
+        Long userId = message.getUser_id();
+        Long sourceId = ((HasId)message).getId();
+        String messageType = message.getMessage_type();
 
         switch (message.getArgs()[0]){
             case "rank":
-                return new RankSession(user_id, source_id, message_type, args);
+                return new RankSession(userId, sourceId, messageType);
             case "word":
-                return new WordSession(user_id, source_id, message_type, args);
+                return new WordSession(userId, sourceId, messageType);
             case "search":
-                return new SearchSession(user_id, source_id, message_type, args);
+                return new SearchSession(userId, sourceId, messageType);
+            case "setu":
+                return new SetuSession(userId, sourceId, messageType);
+            default:
+                break;
         }
 
         return null;
@@ -181,11 +172,11 @@ public class PostController {
         return "Hello ?";
     }
 
-    @GetMapping("/update/rank")
-    public String updateRank(){
-        scheduleTask.download();
-        return "我试试？";
-    }
+//    @GetMapping("/update/rank")
+//    public String updateRank(){
+//        scheduleTask.download();
+//        return "我试试？";
+//    }
 
 
     private String getRequestBody(HttpServletRequest request){
@@ -201,8 +192,6 @@ public class PostController {
             }
             requestBody = URLDecoder.decode(stringBuilder.toString(), "UTF-8");
             requestBody = requestBody.substring(requestBody.indexOf("{"));
-//            request.setAttribute("inputParam", requestBody);
-//            System.out.println("JsonReq reqBody>>>>>" + requestBody);
             bufferedReader.close();
             return requestBody;
         } catch (IOException e) {
@@ -213,24 +202,24 @@ public class PostController {
     }
 
     private String getPostType(String requestBody){
-        String post_type;
-        Pattern p = Pattern.compile("\"post_type\":\".*?\"");
-        Matcher m = p.matcher(requestBody);
+        String postType;
+
+        Matcher m = REGEX_POST_TYPE.matcher(requestBody);
         if(m.find()){
-            post_type = m.group().split(":")[1].replace("\"", "");
-            return post_type;
+            postType = m.group().split(":")[1].replace("\"", "");
+            return postType;
         }else{
             return null;
         }
     }
 
     private BaseMessage processMessage(String requestBody){
-        String message_type = getMessageType(requestBody);
-        Assert.notNull(message_type, "message_type could not be null.");
+        String messageType = getMessageType(requestBody);
+        Assert.notNull(messageType, "messageType could not be null.");
 
         BaseMessage message = null;
 
-        switch (message_type){
+        switch (messageType){
             case "private":
                 message = processPrivateMessage(requestBody);
                 break;
@@ -247,20 +236,19 @@ public class PostController {
     }
 
     private GroupMessage processGroupMessage(String requestBody) {
-        return gson.fromJson(requestBody, GroupMessage.class);
+        return GSON.fromJson(requestBody, GroupMessage.class);
     }
 
     private PrivateMessage processPrivateMessage(String requestBody) {
-        return gson.fromJson(requestBody, PrivateMessage.class);
+        return GSON.fromJson(requestBody, PrivateMessage.class);
     }
 
     private String getMessageType(String requestBody){
-        String message_type;
-        Pattern p = Pattern.compile("\"message_type\":\".*?\"");
-        Matcher m = p.matcher(requestBody);
+        String messageType;
+        Matcher m = REGEX_MESSAGE_TYPE.matcher(requestBody);
         if(m.find()){
-            message_type = m.group().split(":")[1].replace("\"", "");
-            return message_type;
+            messageType = m.group().split(":")[1].replace("\"", "");
+            return messageType;
         }else{
             return null;
         }

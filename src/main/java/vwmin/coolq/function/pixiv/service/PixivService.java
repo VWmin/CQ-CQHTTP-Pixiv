@@ -5,16 +5,18 @@ import vwmin.coolq.function.pixiv.entity.ListIllustResponse;
 import vwmin.coolq.function.pixiv.entity.UserResponse;
 import vwmin.coolq.service.BaseService;
 
+import java.io.IOException;
+
 public interface PixivService extends BaseService {
 
-    public ListIllustResponse getRank(String mode, String date);
+    public ListIllustResponse getRank(String mode, String date) throws IOException;
 
-    public IllustResponse getIllustById(Integer illust_id);
+    public IllustResponse getIllustById(Integer illustId) throws IOException;
 
-    public UserResponse getUserById(Integer user_id);
+    public UserResponse getUserById(Integer userId) throws IOException;
 
-    public ListIllustResponse getIllustByWord(String word, String sort, String search_target);
+    public ListIllustResponse getIllustByWord(String word, String sort, String searchTarget) throws IOException;
 
-    public ListIllustResponse getNext(String next_url);
+    public ListIllustResponse getNext(String nextUrl) throws IOException;
 
 }

@@ -1,34 +1,30 @@
 package vwmin.coolq.function.saucenao.util;
 
 import lombok.extern.slf4j.Slf4j;
-import vwmin.coolq.entity.BaseMessage;
 import vwmin.coolq.entity.MessageSegment;
-import vwmin.coolq.function.pixiv.entity.IllustResponse;
-import vwmin.coolq.function.pixiv.entity.ListIllustResponse;
-import vwmin.coolq.function.pixiv.service.PixivService;
-import vwmin.coolq.function.pixiv.util.IllustUtil;
-import vwmin.coolq.function.saucenao.entity.SauceNAOEntity;
+import vwmin.coolq.function.saucenao.entity.SaucenaoEntity;
 import vwmin.coolq.util.MessageSegmentBuilder;
 
+import java.io.IOException;
 import java.util.List;
 
 @Slf4j
 public class SaucenaoConsumer {
-    private final SauceNAOEntity sauceNAOEntity;
-    private final Long user_id;
+    private final SaucenaoEntity sauceNAOEntity;
+    private final Long userId;
 //    private final PixivService pixivService;
-    public SaucenaoConsumer(SauceNAOEntity sauceNAOEntity, Long user_id){
-        this.sauceNAOEntity = sauceNAOEntity;
-        this.user_id = user_id;
+    public SaucenaoConsumer(SaucenaoEntity saucenaoEntity, Long userId){
+        this.sauceNAOEntity = saucenaoEntity;
+        this.userId = userId;
 //        this.pixivService = pixivService;
     }
 
 
-    public List<MessageSegment> mostly(){
+    public List<MessageSegment> mostly() throws IOException {
         MessageSegmentBuilder builder = new MessageSegmentBuilder();
 
-        SauceNAOEntity.ResultsBean one = sauceNAOEntity.getResults().get(0);
-        SauceNAOEntity.HeaderBean header = sauceNAOEntity.getHeader();
+        SaucenaoEntity.ResultsBean one = sauceNAOEntity.getResults().get(0);
+        SaucenaoEntity.HeaderBean header = sauceNAOEntity.getHeader();
 
         log.info("SauceNAO the first result  >>  " + one);
 
@@ -50,8 +46,8 @@ public class SaucenaoConsumer {
         if(one.getData().getMember_name()!=null) {
             author = one.getData().getMember_name();
         }
-//        }else if(one.getData().getCreator()!=null){
-//            author = one.getData().getCreator() + "";
+//        }else if(one.setData().getCreator()!=null){
+//            author = one.setData().getCreator() + "";
 //        }
 
         // 通用
@@ -60,7 +56,7 @@ public class SaucenaoConsumer {
 
 
         if(one.getHeader().getIndex_id() == 5){ //Pixiv
-//            IllustResponse illustById = pixivService.getIllustById(one.getData().getPixiv_id());
+//            IllustResponse illustById = pixivService.getIllustById(one.setData().getPixiv_id());
 //            if(illustById!=null && illustById.getIllust()!=null){
 //                ListIllustResponse.IllustsBean illust = illustById.getIllust();
 //                fileName = illust.getId() + IllustUtil.getImgType(illust);
@@ -69,11 +65,11 @@ public class SaucenaoConsumer {
         }
 
         if(similarity < 50){
-            builder.addAtSegment(user_id)
+            builder.addAtSegment(userId)
                     .addTextSegment("[找到图片相似度过低(" + one.getHeader().getSimilarity() + "%)，结果不给康了嗷，感兴趣请戳↓]\n")
                     .addTextSegment(one.getData().getExt_urls().get(0));
         }else{
-            builder.addAtSegment(user_id)
+            builder.addAtSegment(userId)
                     .addTextSegment("[找到图片相似度：" + one.getHeader().getSimilarity() + "%]\n")
                     .addTextSegment("[" + title + "]  by  [" + author + "]")
                     .addImageSegment(fileName, fileUrl);
@@ -85,7 +81,7 @@ public class SaucenaoConsumer {
 //        if(short_remaining<5){
 //            builder.addTextSegment("\nwarn >> 30s内剩余次数："+short_remaining);
 //        }
-        if(long_remaining<20){
+        if(long_remaining < 20){
             builder.addTextSegment("\nwarn >> 24h内剩余次数："+long_remaining);
         }
 

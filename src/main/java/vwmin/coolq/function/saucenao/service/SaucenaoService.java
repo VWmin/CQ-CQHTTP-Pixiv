@@ -1,9 +1,11 @@
 package vwmin.coolq.function.saucenao.service;
 
-import vwmin.coolq.function.saucenao.entity.SauceNAOEntity;
+import vwmin.coolq.function.saucenao.entity.SaucenaoEntity;
 import vwmin.coolq.service.BaseService;
+
+import java.io.IOException;
 
 public interface SaucenaoService extends BaseService {
 
-    SauceNAOEntity getSearchResponse(String url, Integer db);
+    SaucenaoEntity getSearchResponse(String url, Integer db) throws IOException;
 }

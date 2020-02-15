@@ -1,13 +1,19 @@
 package vwmin.coolq.enums;
 
+/**
+ * @author Min
+ */
+
 public enum  ArgsDispatcherType {
+    /***/
     PIXIV("pixivArgsDispatcher"),
     SAUCENAO("saucenaoDispatcher"),
-    SETU("setuArgsDispatcher");
+    SETU("setuArgsDispatcher"),
+    NULL("nullArgsDispatcher");
 
     private String key;
 
-    ArgsDispatcherType(String key){
+    private ArgsDispatcherType(String key){
         this.key = key;
     }
 

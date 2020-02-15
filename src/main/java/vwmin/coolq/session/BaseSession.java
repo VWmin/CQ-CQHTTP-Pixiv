@@ -3,8 +3,11 @@ package vwmin.coolq.session;
 
 import vwmin.coolq.entity.SendMessageEntity;
 import vwmin.coolq.enums.ArgsDispatcherType;
-import vwmin.coolq.service.BaseService;
+import vwmin.coolq.function.Command;
 import vwmin.coolq.util.BaseConsumer;
+import vwmin.coolq.util.ErrorConsumer;
+
+import java.io.IOException;
 
 /**
  * 如何设计这个session？
@@ -27,25 +30,28 @@ import vwmin.coolq.util.BaseConsumer;
  */
 public abstract class BaseSession {
 
-    Long user_id;
-    Long source_id;
-    String message_type;
-    String[] args;
+    protected Long userId;
+    protected Long sourceId;
+    protected String messageType;
 
-    Step before;
-    BaseConsumer consumer;
+    protected BaseConsumer consumer;
+
+    protected Command command;
 
     private boolean isOver = false;
 
 
-    public BaseSession(Long user_id, Long source_id, String message_type, String[] args){
-        this.user_id = user_id;
-        this.source_id = source_id;
-        this.message_type = message_type;
-        this.args = args;
+    public BaseSession(Long userId, Long sourceId, String messageType){
+        this.userId = userId;
+        this.sourceId = sourceId;
+        this.messageType = messageType;
     }
 
-    void close(){
+    public void setCommand(Command command) {
+        this.command = command;
+    }
+
+    public void close(){
         this.isOver = true;
     }
 
@@ -53,53 +59,16 @@ public abstract class BaseSession {
         return isOver;
     }
 
-    void reset(Long source_id, String message_type, String[] args){
-        this.reset();
-        this.source_id = source_id;
-        this.message_type = message_type;
-        this.args = args;
+    public SendMessageEntity handleParseException(Exception e){
+        return new SendMessageEntity(messageType, sourceId, ErrorConsumer.response(userId, e.getMessage()));
     }
 
-    private void reset(String[] args){
-        this.reset();
-        this.args = args;
-    }
+    abstract public void update(Long sourceId, String messageType, String[] args);
 
-    private void reset(){
-        before = null;
-        consumer = null;
-    }
-
-    private void update(Long source_id, String message_type){
-        this.source_id = source_id;
-        this.message_type = message_type;
-    }
-
-    void commonUpdate(Long source_id, String message_type, String[] args, Step current){
-        //如果消息来源换了，只更新来源和类型，不重置
-        if(!source_id.equals(this.source_id) || !message_type.equals(this.message_type)){
-            this.update(source_id, message_type);
-        }
-
-        if(current.getCurrentStep() == before.getCurrentStep()){
-            if(!before.isRepeatable()) { //如果这个步骤与上一个步骤相同，且是不可重复的，重置session
-                this.reset(args);
-            }
-            else{ //如果这个步骤与上一个步骤相同，但是可重复
-                this.args = args; //只需要更新命令
-            }
-        } else if(current.getCurrentStep() > before.getCurrentStep()){ //如果这个步骤大于上一个步骤
-            this.args = args; //只需要更新命令
-        } else{ //如果这个步骤小于上一个步骤，视为重置
-            this.reset(args);
-        }
-    }
-
-    abstract public void update(Long source_id, String message_type, String[] args);
-
-    abstract public SendMessageEntity checkAndExecute(BaseService baseService);
+    abstract public SendMessageEntity checkAndExecute() throws IOException;
 
     abstract public ArgsDispatcherType getBelong();
+
 
 }
 

@@ -1,54 +1,82 @@
 package vwmin.coolq.network;
 
 
+import vwmin.coolq.network.calladapter.CallAdapter;
+import vwmin.coolq.network.converter.Converter;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.impl.client.CloseableHttpClient;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 
-abstract class HttpServiceMethod<ResponseT, ReturnT> extends ServiceMethod<ReturnT>{
+/**
+ * 将方法转化为http请求
+ * @param <ResponseT>
+ * @param <ReturnT>
+ */
+final class HttpServiceMethod<ResponseT, ReturnT> extends ServiceMethod<ReturnT>{
 
     static <ResponseT, ReturnT> HttpServiceMethod<ResponseT, ReturnT> parseAnnotations(
             NetworkClient client, Method method, RequestFactory requestFactory){
 
-        Annotation[] annotations = method.getAnnotations();
-        Type returnType = method.getGenericReturnType();
-        CallAdapter<ResponseT, ReturnT> callAdapter = creatCallAdapter(client, method, returnType, annotations);
+        CallAdapter<ResponseT, ReturnT> callAdapter = creatCallAdapter(client, method);
 
-        return new CallAdapted<>(requestFactory, callAdapter);
+        Type responseType = callAdapter.responseType();
+
+
+        Converter<CloseableHttpResponse, ResponseT> responseConverter =
+                    createResponseConverter(client, method, responseType);
+
+
+        CloseableHttpClient callFactory = client.callFactory;
+
+        return new HttpServiceMethod<>(requestFactory, callFactory, callAdapter, responseConverter);
     }
 
+
+    private static <ResponseT> Converter<CloseableHttpResponse, ResponseT> createResponseConverter(
+            NetworkClient client, Method method, Type responseType){
+        Annotation[] annotations = method.getAnnotations();
+        try{
+            //noinspection unchecked
+            return client.closeableHttpResponseConverter(responseType, annotations);
+        }catch (RuntimeException e){
+            throw Utils.methodError(method, e, "Unable to create converter for %s", responseType);
+        }
+    }
+
+
     private static <ResponseT, ReturnT> CallAdapter<ResponseT, ReturnT> creatCallAdapter(
-            NetworkClient client, Method method, Type returnType, Annotation[] annotations) {
-        return (CallAdapter<ResponseT, ReturnT>) client.callAdapter(returnType, annotations);
+            NetworkClient client, Method method) {
+        Type returnType = method.getGenericReturnType();
+        Annotation[] annotations = method.getAnnotations();
+        try{
+            //noinspection unchecked
+            return (CallAdapter<ResponseT, ReturnT>) client.callAdapter(returnType, annotations);
+        }catch (RuntimeException e) { // Wide exception range because factories are user code.
+            throw Utils.methodError(method, e, "Unable to create call adapter for %s", returnType);
+        }
     }
 
     private final RequestFactory requestFactory;
+    private final CloseableHttpClient callFactory;
+    private final CallAdapter<ResponseT, ReturnT> callAdapter;
+    private final Converter<CloseableHttpResponse, ResponseT> responseConverter;
 
-    HttpServiceMethod(RequestFactory requestFactory){
+    private HttpServiceMethod(RequestFactory requestFactory, CloseableHttpClient callFactory,
+                              CallAdapter<ResponseT, ReturnT> callAdapter,
+                              Converter<CloseableHttpResponse, ResponseT> responseConverter) {
         this.requestFactory = requestFactory;
+        this.callFactory = callFactory;
+        this.callAdapter = callAdapter;
+        this.responseConverter = responseConverter;
     }
 
     @Override
     final ReturnT invoke(Object[] args){
-        Call<ResponseT> call = new HttpClientCall<>(requestFactory, args);
-        return adapt(call, args);
+        return callAdapter.adapt(
+                new HttpClientCall<>(requestFactory, args, callFactory, responseConverter));
     }
-
-    protected abstract ReturnT adapt(Call<ResponseT> call, Object[] args);
-
-    static final class CallAdapted<ResponseT, ReturnT> extends HttpServiceMethod<ResponseT, ReturnT> {
-        private final CallAdapter<ResponseT, ReturnT> callAdapter;
-
-        CallAdapted(RequestFactory requestFactory, CallAdapter<ResponseT, ReturnT> callAdapter){
-            super(requestFactory);
-            this.callAdapter = callAdapter;
-        }
-
-        @Override
-        protected ReturnT adapt(Call<ResponseT> call, Object[] args) {
-            return callAdapter.adapt(call);
-        }
-    }
-
 
 }

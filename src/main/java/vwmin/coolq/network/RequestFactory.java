@@ -1,24 +1,22 @@
 package vwmin.coolq.network;
 
-//import org.apache.http.client.methods.HttpGet;
-//import org.apache.http.client.methods.HttpRequestBase;
-
 import com.google.gson.Gson;
+import vwmin.coolq.network.annotation.*;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.methods.RequestBuilder;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicNameValuePair;
-import vwmin.coolq.network.annotation.*;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static vwmin.coolq.network.Utils.methodError;
 
 /**
  * 将接口注解上的信息解析为一个Http请求，由{@link HttpClientCall}进行后续处理
@@ -78,7 +76,9 @@ final class RequestFactory {
         Map<String, Object> fields = new HashMap<>();
 
         for(int i=0; i<parameterHandlers.length; i++){
-            if(args[i] == null) continue; //跳过未填入的参数
+            if(args[i] == null) {
+                continue; //跳过未填入的参数
+            }
             if(parameterHandlers[i] instanceof ParameterHandler.Query){
                 ((ParameterHandler.Query) parameterHandlers[i]).apply(queries, args[i].toString());
             } else if(parameterHandlers[i] instanceof ParameterHandler.Field){
@@ -91,28 +91,29 @@ final class RequestFactory {
         }
 
         if(gotQuery){
-            for (BasicNameValuePair query : queries) requestBuilder.addParameter(query);
+            for (BasicNameValuePair query : queries) {
+                requestBuilder.addParameter(query);
+            }
         }else if(gotField){
             if(gotJson){
-                throw Utils.methodError(method, "数据提交只能有一种方式");
+                throw methodError(method, "数据提交只能有一种方式");
             }
             switch (contentType) {
                 case "application/x-www-form-urlencoded":
                     List<BasicNameValuePair> pairs = new ArrayList<>();
-                    for (String key : fields.keySet()) pairs.add(new BasicNameValuePair(key, fields.get(key).toString()));
-
+                    for (String key : fields.keySet()) {
+                        pairs.add(new BasicNameValuePair(key, fields.get(key).toString()));
+                    }
                     try {
                         requestBuilder.setEntity(new UrlEncodedFormEntity(pairs, "UTF-8"));
                     } catch (UnsupportedEncodingException e) {
                         e.printStackTrace();
                     }
-
                     break;
                 case "application/json":
                     requestBuilder.setEntity(new StringEntity(gson.toJson(fields), "UTF-8"));
                     break;
-                case "multipart/form-data":
-
+                default:
                     break;
             }
         }
@@ -125,6 +126,10 @@ final class RequestFactory {
      * 负责信息的包装过程
      */
     static final class Builder{
+        private static final String PARAM = "[a-zA-Z][a-zA-Z0-9_-]*";
+        private static final Pattern PARAM_URL_REGEX = Pattern.compile("\\{(" + PARAM + ")\\}");
+        private static final Pattern PARAM_NAME_REGEX = Pattern.compile(PARAM);
+
         final NetworkClient client;
         final Method method;
         final Annotation[] methodAnnotations;
@@ -141,6 +146,7 @@ final class RequestFactory {
         private boolean gotQuery;
         private String contentType;
         private boolean gotJson;
+        private Set<String> relativeUrlParamNames;
 
         Builder(NetworkClient client, Method method){
             this.client = client;
@@ -156,7 +162,7 @@ final class RequestFactory {
             }
 
             if(httpMethod == null){
-                throw Utils.methodError(method, "HTTP Method annotation is required.");
+                throw methodError(method, "HTTP Method annotation is required.");
             }
 
             int parameterCount = parameterAnnotationsArray.length;
@@ -167,7 +173,7 @@ final class RequestFactory {
             }
 
             if(relativeUrl == null){
-                throw Utils.methodError(method, "Http %s Url.", httpMethod);
+                throw methodError(method, "Http %s Url.", httpMethod);
             }
 
             if(headers == null) {
@@ -214,7 +220,7 @@ final class RequestFactory {
         }
 
         /**
-         * 解析类方法注解中的一个注解
+         * 解析方法参数注解中的一个注解
          * @param index 第几个注解
          * @param parameterType 参数类型
          * @param annotation 注解
@@ -232,10 +238,11 @@ final class RequestFactory {
             }else if(annotation instanceof Query){
                 Query query = (Query) annotation;
                 String queryName = query.value();
+                boolean required = query.required();
 
                 this.gotQuery = true;
 
-                return new ParameterHandler.Query(queryName);
+                return new ParameterHandler.Query(queryName, required);
             }else if(annotation instanceof Json){
                 this.gotJson = true;
 
@@ -264,7 +271,7 @@ final class RequestFactory {
             } else if(annotation instanceof Headers){
                 String[] headersToParse = ((Headers) annotation).value();
                 if(headersToParse.length == 0) {
-                    throw Utils.methodError(method, "@Headers annotation is empty.");
+                    throw methodError(method, "@Headers annotation is empty.");
                 }
                 this.headers = parseHeaders(headersToParse);
             }
@@ -281,7 +288,7 @@ final class RequestFactory {
                 //检查格式正确性
                 int colon = header.indexOf(":");
                 if(colon == -1 || colon == 0 || colon == header.length()-1 ){
-                    throw Utils.methodError(method,
+                    throw methodError(method,
                             "@Headers value must be in the form \"Name: Value\". Found: \"%s\"", header);
                 }
 
@@ -299,17 +306,41 @@ final class RequestFactory {
          * @param hasBody 是否存在请求体
          */
         private void parseHttpMethodAndPath(String httpMethod, String value, boolean hasBody) {
+            // 防止出现两个方法注解
             if(this.httpMethod != null){
-                throw Utils.methodError(method, "Only one HTTP method is allowed. Found: %s and %s.",
+                throw methodError(method, "Only one HTTP method is allowed. Found: %s and %s.",
                         this.httpMethod, httpMethod);
             }
 
             this.httpMethod = httpMethod;
             this.hasBody = hasBody;
 
-            // TODO: 2019/8/8 检查相对连接中是否存在查询参数，有则提醒使用@Query
+            if (value.isEmpty()){
+                return;
+            }
 
+            // Get the relative URL path and existing query string, if present.
+            int question = value.indexOf("?");
+            if (question != -1 && question < value.length()-1){
+                // Ensure the query string does not have any named parameters.
+                String queryParams = value.substring(question+1);
+                Matcher queryParamMatcher = PARAM_URL_REGEX.matcher(queryParams);
+                if (queryParamMatcher.find()) {
+                    throw methodError(method, "URL query string \"%s\" must not have replace block. "
+                            + "For dynamic query parameters use @Query.", queryParams);
+                }
+            }
             this.relativeUrl = value;
+            this.relativeUrlParamNames = parsePathParameters(value);
+        }
+
+        private Set<String> parsePathParameters(String path) {
+            Matcher m = PARAM_URL_REGEX.matcher(path);
+            Set<String> patterns = new LinkedHashSet<>();
+            while (m.find()) {
+                patterns.add(m.group(1));
+            }
+            return patterns;
         }
     }
 }

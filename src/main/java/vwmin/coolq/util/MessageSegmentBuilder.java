@@ -6,6 +6,7 @@ import vwmin.coolq.SpringUtil;
 import vwmin.coolq.configuration.BotConfig;
 import vwmin.coolq.entity.MessageSegment;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,8 +49,8 @@ public class MessageSegmentBuilder {
      * @param url 连接
      * @return builder实例自身
      */
-    public MessageSegmentBuilder addImageSegment(String fileName, String url){
-        if(fileName == null || fileName.equals("")) {
+    public MessageSegmentBuilder addImageSegment(String fileName, String url) throws IOException {
+        if(fileName == null || "".equals(fileName)) {
             log.warn("保存文件名不能为空，本段消息将取消发送");
             return this;
         }
@@ -61,7 +62,9 @@ public class MessageSegmentBuilder {
         //如果本地没有则下载
         if(!tryLocal(CQ_IMAGE_PATH, fileName)){
             //如果下载失败则取消
-            if(!downloadPixivImage(CQ_IMAGE_PATH, fileName, url)) return this;
+            if(!downloadPixivImage(CQ_IMAGE_PATH, fileName, url)) {
+                return this;
+            }
         }
 
         segment.addData("file", fileName);

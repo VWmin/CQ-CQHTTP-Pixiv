@@ -6,13 +6,12 @@ import vwmin.coolq.configuration.BotConfig;
 import vwmin.coolq.function.pixiv.entity.IllustResponse;
 import vwmin.coolq.function.pixiv.entity.ListIllustResponse;
 import vwmin.coolq.function.pixiv.entity.UserResponse;
-import vwmin.coolq.function.pixiv.service.networkapi.PixivApi;
-import vwmin.coolq.network.MyCallAdapterFactory;
 import vwmin.coolq.network.NetworkClient;
-import vwmin.coolq.network.Response;
+import vwmin.coolq.network.calladapter.ObservableCallAdapterFactory;
+import vwmin.coolq.network.converter.GsonConverterFactory;
 import vwmin.coolq.util.StringUtil;
 
-import java.sql.ResultSet;
+import java.io.IOException;
 
 @Service
 @Slf4j
@@ -21,46 +20,41 @@ public class PixivServiceImpl implements PixivService{
 
 
 
-    PixivServiceImpl(BotConfig botConfig){
+    public PixivServiceImpl(BotConfig botConfig){
         NetworkClient<PixivApi> client = new NetworkClient<>(botConfig.getPixivApi(),
-                PixivApi.class, MyCallAdapterFactory.create());
+                PixivApi.class, ObservableCallAdapterFactory.create(), GsonConverterFactory.create());
         this.pixivApi = client.getApi();
     }
 
 
     @Override
-    public ListIllustResponse getRank(String mode, String date) {
-        // TODO: 2019/10/16 这个要改改 太蠢了
-        Response<ListIllustResponse> response = pixivApi.getRank(mode, date);
-        return response.getResponse();
+    public ListIllustResponse getRank(String mode, String date) throws IOException {
+        return pixivApi.getRank(mode, date).result();
     }
 
     @Override
-    public IllustResponse getIllustById(Integer illust_id) {
-        Response<IllustResponse> response = pixivApi.getIllustById(illust_id+"");
-        return response.getResponse();
+    public IllustResponse getIllustById(Integer illustId) throws IOException {
+        return pixivApi.getIllustById(String.valueOf(illustId)).result();
     }
 
     @Override
-    public UserResponse getUserById(Integer user_id) {
-        Response<UserResponse> response = pixivApi.getUserById(user_id+"");
-        return response.getResponse();
+    public UserResponse getUserById(Integer userId) throws IOException {
+        return pixivApi.getUserById(String.valueOf(userId)).result();
     }
 
     @Override
-    public ListIllustResponse getIllustByWord(String word, String sort, String search_target) {
-        Response<ListIllustResponse> response = pixivApi.getIllustByWord(word, sort, search_target);
-        ListIllustResponse r = response.getResponse();
-        log.info("response for '/search/illust' >> "+ StringUtil.getDigest(r.toString()));
-        return r;
+    public ListIllustResponse getIllustByWord(String word, String sort, String searchTarget) throws IOException {
+        ListIllustResponse result =
+                pixivApi.getIllustByWord(word, sort, searchTarget).result();
+        log.info("response for '/search/illust' >> "+ StringUtil.getDigest(result.toString()));
+        return result;
     }
 
     @Override
-    public ListIllustResponse getNext(String next_url) {
-        Response<ListIllustResponse> response = pixivApi.getNext(next_url);
-        ListIllustResponse r = response.getResponse();
-        log.info("response for '/next' >> "+ StringUtil.getDigest(r.toString()));
-        return r;
+    public ListIllustResponse getNext(String nextUrl) throws IOException {
+        ListIllustResponse response = pixivApi.getNext(nextUrl).result();
+        log.info("response for '/next' >> "+ StringUtil.getDigest(response.toString()));
+        return response;
     }
 
 
