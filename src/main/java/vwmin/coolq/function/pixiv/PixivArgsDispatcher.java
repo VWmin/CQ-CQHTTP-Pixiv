@@ -35,7 +35,7 @@ public class PixivArgsDispatcher implements ArgsDispatcher {
         try {
             session.setCommand(createCommand(pixivService, args));
             send = session.checkAndExecute();
-        } catch (IOException | ParseException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             send = session.handleParseException(e);
         }

@@ -10,7 +10,7 @@ import vwmin.coolq.network.calladapter.Observable;
  */
 public interface SauceNAO {
     @GET("/search.php")
-    public Observable<SaucenaoEntity> search(@Query("url") String url,
+    Observable<SaucenaoEntity> search(@Query("url") String url,
                                              @Query("database") Integer database,
                                              @Query("output_type") Integer outputType,
                                              @Query("numres") Integer numres);

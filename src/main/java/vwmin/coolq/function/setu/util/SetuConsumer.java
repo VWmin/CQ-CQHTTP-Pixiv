@@ -2,8 +2,10 @@ package vwmin.coolq.function.setu.util;
 
 import org.springframework.util.Assert;
 import vwmin.coolq.entity.MessageSegment;
+import vwmin.coolq.exception.EmptyDataException;
 import vwmin.coolq.function.setu.entity.SetuEntity;
 import vwmin.coolq.util.BaseConsumer;
+import vwmin.coolq.util.EmptyDataUtil;
 import vwmin.coolq.util.MessageSegmentBuilder;
 
 import java.io.IOException;
@@ -18,9 +20,8 @@ public class SetuConsumer implements BaseConsumer {
         this.userId = userId;
     }
 
-    public List<MessageSegment> getOne() throws IOException {
-        Assert.isTrue(setuEntity.getData()!=null
-                && setuEntity.getData().size()!=0, "人家真的一张也没有了");
+    public List<MessageSegment> getOne() throws IOException, EmptyDataException {
+        EmptyDataUtil.assertListNotEmpty(setuEntity.getData(),"人家真的一张也没有了");
         SetuEntity.DataBean dataBean = setuEntity.getData().get(0);
         String imgUrl = dataBean.getUrl();
         MessageSegmentBuilder builder = new MessageSegmentBuilder();

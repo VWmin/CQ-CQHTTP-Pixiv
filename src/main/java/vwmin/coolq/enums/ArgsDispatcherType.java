@@ -13,7 +13,7 @@ public enum  ArgsDispatcherType {
 
     private String key;
 
-    private ArgsDispatcherType(String key){
+    ArgsDispatcherType(String key){
         this.key = key;
     }
 

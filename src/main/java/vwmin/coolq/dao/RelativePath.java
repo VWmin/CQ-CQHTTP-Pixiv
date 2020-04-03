@@ -1,0 +1,17 @@
+package vwmin.coolq.dao;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+/**
+ * @author vwmin
+ * @version 1.0
+ * @date 2020/4/3 11:53
+ */
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface RelativePath {
+    String value() default "";
+}

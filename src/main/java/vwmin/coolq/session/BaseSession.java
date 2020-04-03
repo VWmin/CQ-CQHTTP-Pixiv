@@ -3,6 +3,8 @@ package vwmin.coolq.session;
 
 import vwmin.coolq.entity.SendMessageEntity;
 import vwmin.coolq.enums.ArgsDispatcherType;
+import vwmin.coolq.enums.MessageType;
+import vwmin.coolq.exception.EmptyDataException;
 import vwmin.coolq.function.Command;
 import vwmin.coolq.util.BaseConsumer;
 import vwmin.coolq.util.ErrorConsumer;
@@ -32,7 +34,7 @@ public abstract class BaseSession {
 
     protected Long userId;
     protected Long sourceId;
-    protected String messageType;
+    protected MessageType messageType;
 
     protected BaseConsumer consumer;
 
@@ -41,7 +43,7 @@ public abstract class BaseSession {
     private boolean isOver = false;
 
 
-    public BaseSession(Long userId, Long sourceId, String messageType){
+    public BaseSession(Long userId, Long sourceId, MessageType messageType){
         this.userId = userId;
         this.sourceId = sourceId;
         this.messageType = messageType;
@@ -60,12 +62,12 @@ public abstract class BaseSession {
     }
 
     public SendMessageEntity handleParseException(Exception e){
-        return new SendMessageEntity(messageType, sourceId, ErrorConsumer.response(userId, e.getMessage()));
+        return SendMessageEntity.create(messageType, sourceId, ErrorConsumer.response(userId, e.getMessage()));
     }
 
     abstract public void update(Long sourceId, String messageType, String[] args);
 
-    abstract public SendMessageEntity checkAndExecute() throws IOException;
+    abstract public SendMessageEntity checkAndExecute() throws IOException, EmptyDataException;
 
     abstract public ArgsDispatcherType getBelong();
 

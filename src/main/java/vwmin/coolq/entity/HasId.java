@@ -5,5 +5,5 @@ package vwmin.coolq.entity;
  *
  */
 public interface HasId {
-    public Long getId();
+    Long getId();
 }

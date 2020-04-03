@@ -9,14 +9,14 @@ import java.io.IOException;
 
 public interface PixivService extends BaseService {
 
-    public ListIllustResponse getRank(String mode, String date) throws IOException;
+    ListIllustResponse getRank(String mode, String date) throws IOException;
 
-    public IllustResponse getIllustById(Integer illustId) throws IOException;
+    IllustResponse getIllustById(Integer illustId) throws IOException;
 
-    public UserResponse getUserById(Integer userId) throws IOException;
+    UserResponse getUserById(Integer userId) throws IOException;
 
-    public ListIllustResponse getIllustByWord(String word, String sort, String searchTarget) throws IOException;
+    ListIllustResponse getIllustByWord(String word, String sort, String searchTarget) throws IOException;
 
-    public ListIllustResponse getNext(String nextUrl) throws IOException;
+    ListIllustResponse getNext(String nextUrl) throws IOException;
 
 }

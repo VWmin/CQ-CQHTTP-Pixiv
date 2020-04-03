@@ -1,18 +1,8 @@
 package vwmin.coolq.function.pixiv.service;
 
-import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import vwmin.coolq.configuration.BotConfig;
-import vwmin.coolq.function.pixiv.entity.ListIllustResponse;
-
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.TimeUnit;
-
-import static vwmin.coolq.util.DownloadUtil.*;
-import static vwmin.coolq.function.pixiv.util.IllustUtil.*;
 
 @Slf4j
 @Component

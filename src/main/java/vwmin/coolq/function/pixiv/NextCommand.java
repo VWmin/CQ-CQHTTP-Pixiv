@@ -1,6 +1,5 @@
 package vwmin.coolq.function.pixiv;
 
-import vwmin.coolq.entity.CommandParam;
 import vwmin.coolq.function.Command;
 
 import java.io.IOException;

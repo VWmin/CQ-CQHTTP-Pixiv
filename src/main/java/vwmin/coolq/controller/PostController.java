@@ -6,6 +6,7 @@ import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 import vwmin.coolq.entity.*;
 import vwmin.coolq.enums.ArgsDispatcherType;
+import vwmin.coolq.enums.MessageType;
 import vwmin.coolq.function.pixiv.service.ScheduleTask;
 import vwmin.coolq.function.setu.SetuSession;
 import vwmin.coolq.service.ArgsDispatcher;
@@ -149,7 +150,7 @@ public class PostController {
     private BaseSession creatSession(BaseMessage message) {
         Long userId = message.getUser_id();
         Long sourceId = ((HasId)message).getId();
-        String messageType = message.getMessage_type();
+        MessageType messageType = MessageType.valueOf(message.getMessage_type().toUpperCase());
 
         switch (message.getArgs()[0]){
             case "rank":

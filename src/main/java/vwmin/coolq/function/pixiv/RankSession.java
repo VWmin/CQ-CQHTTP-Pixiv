@@ -3,6 +3,7 @@ package vwmin.coolq.function.pixiv;
 import vwmin.coolq.entity.MessageSegment;
 import vwmin.coolq.entity.SendMessageEntity;
 import vwmin.coolq.enums.ArgsDispatcherType;
+import vwmin.coolq.enums.MessageType;
 import vwmin.coolq.function.pixiv.entity.ListIllustResponse;
 import vwmin.coolq.function.pixiv.util.IllustsResponseConsumer;
 import vwmin.coolq.session.*;
@@ -18,7 +19,7 @@ public class RankSession extends BaseSession implements WithDataState {
 
     private DataState dataState;
 
-    public RankSession(Long userId, Long sourceId, String messageType){
+    public RankSession(Long userId, Long sourceId, MessageType messageType){
         super(userId, sourceId, messageType);
         hasDataState = new HasDataState(this);
         noDataState = new NoDataState(this);
@@ -48,7 +49,7 @@ public class RankSession extends BaseSession implements WithDataState {
 
         if (command instanceof NextCommand){
             // noinspection unchecked
-            return new SendMessageEntity(messageType, sourceId, (List<MessageSegment>) getNext());
+            return SendMessageEntity.create(messageType, sourceId, (List<MessageSegment>) getNext());
         }
 
         SendMessageEntity send;
@@ -57,7 +58,7 @@ public class RankSession extends BaseSession implements WithDataState {
         // 获得数据后转到HasDataState
         setData(consumer);
         // TODO: 2020/2/6 如何通过命令指定响应的格式
-        send = new SendMessageEntity(messageType, sourceId, ((IllustsResponseConsumer)consumer).top10());
+        send = SendMessageEntity.create(messageType, sourceId, ((IllustsResponseConsumer)consumer).top10());
         return send;
     }
 

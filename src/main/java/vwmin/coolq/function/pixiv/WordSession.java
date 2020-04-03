@@ -3,6 +3,7 @@ package vwmin.coolq.function.pixiv;
 import vwmin.coolq.entity.MessageSegment;
 import vwmin.coolq.entity.SendMessageEntity;
 import vwmin.coolq.enums.ArgsDispatcherType;
+import vwmin.coolq.enums.MessageType;
 import vwmin.coolq.function.pixiv.entity.ListIllustResponse;
 import vwmin.coolq.function.pixiv.util.IllustsResponseConsumer;
 import vwmin.coolq.session.BaseSession;
@@ -17,7 +18,7 @@ public class WordSession extends BaseSession implements WithDataState {
 
     private DataState dataState;
 
-    public WordSession(Long userId, Long sourceId, String messageType) {
+    public WordSession(Long userId, Long sourceId, MessageType messageType) {
         super(userId, sourceId, messageType);
         hasDataState = new HasDataState(this);
         noDataState = new NoDataState(this);
@@ -35,13 +36,13 @@ public class WordSession extends BaseSession implements WithDataState {
 
         if (command instanceof NextCommand){
             // noinspection unchecked
-            return new SendMessageEntity(messageType, sourceId, (List<MessageSegment>) getNext());
+            return SendMessageEntity.create(messageType, sourceId, (List<MessageSegment>) getNext());
         }
 
         ListIllustResponse rankResponse = (ListIllustResponse) command.execute();
         consumer = new IllustsResponseConsumer(rankResponse, userId);
         setData(consumer);
-        send = new SendMessageEntity(messageType, sourceId, ((IllustsResponseConsumer)consumer).top10());
+        send = SendMessageEntity.create(messageType, sourceId, ((IllustsResponseConsumer)consumer).top10());
 
         return send;
     }

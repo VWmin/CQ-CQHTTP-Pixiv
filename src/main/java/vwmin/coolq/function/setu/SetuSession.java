@@ -3,6 +3,8 @@ package vwmin.coolq.function.setu;
 import lombok.extern.slf4j.Slf4j;
 import vwmin.coolq.entity.SendMessageEntity;
 import vwmin.coolq.enums.ArgsDispatcherType;
+import vwmin.coolq.enums.MessageType;
+import vwmin.coolq.exception.EmptyDataException;
 import vwmin.coolq.function.setu.entity.SetuEntity;
 import vwmin.coolq.function.setu.util.SetuConsumer;
 import vwmin.coolq.session.BaseSession;
@@ -16,7 +18,7 @@ import java.io.IOException;
 public class SetuSession extends BaseSession {
 
 
-    public SetuSession(Long userId, Long sourceId, String messageType) {
+    public SetuSession(Long userId, Long sourceId, MessageType messageType) {
         super(userId, sourceId, messageType);
     }
 
@@ -25,12 +27,12 @@ public class SetuSession extends BaseSession {
     }
 
     @Override
-    public SendMessageEntity checkAndExecute() throws IOException {
+    public SendMessageEntity checkAndExecute() throws IOException, EmptyDataException {
         SendMessageEntity send;
 
         SetuEntity setuEntity = (SetuEntity) command.execute();
         consumer = new SetuConsumer(setuEntity, userId);
-        send = new SendMessageEntity(messageType, sourceId, ((SetuConsumer)consumer).getOne());
+        send = SendMessageEntity.create(messageType, sourceId, ((SetuConsumer)consumer).getOne());
         close();
 
         return send;
