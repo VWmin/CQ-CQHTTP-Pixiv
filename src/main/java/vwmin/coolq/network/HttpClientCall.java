@@ -33,7 +33,7 @@ final class HttpClientCall<ResponseT> implements Call<ResponseT> {
                //链接超时时间
                .setConnectTimeout(5000)
                //获取数据超时时间
-               .setSocketTimeout(5000)
+//               .setSocketTimeout(5000)
                //从连接池获取链接超时时间
                .setConnectionRequestTimeout(1000)
                .build();

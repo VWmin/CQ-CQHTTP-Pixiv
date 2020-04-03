@@ -2,7 +2,9 @@ package vwmin.coolq.configuration;
 
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
 
 @Component("botConfig")
 @ConfigurationProperties(prefix = "botconfig")
@@ -10,6 +12,11 @@ public class BotConfig {
     private String imagePath;
     private String pixivApi;
     private String cqClientUrl;
+
+    @Bean
+    public RestTemplate restTemplate(){
+        return new RestTemplate();
+    }
 
     public String getCqClientUrl() {
         return cqClientUrl;
