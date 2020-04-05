@@ -1,6 +1,6 @@
 package vwmin.coolq.entity;
 
-import com.google.gson.annotations.SerializedName;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import vwmin.coolq.enums.MessageType;
@@ -9,18 +9,18 @@ import java.util.List;
 
 @Data
 public class SendMessageEntity {
-    @SerializedName("message_type")
+    @JsonProperty("message_type")
     protected String messageType;
 
     protected List<MessageSegment> message;
 
-    @SerializedName("auto_escape")
+    @JsonProperty("auto_escape")
     protected Boolean autoEscape;
 
     @EqualsAndHashCode(callSuper = true)
     @Data
     public static final class DiscussSendMessageEntity extends SendMessageEntity{
-        @SerializedName("discuss_id")
+        @JsonProperty("discuss_id")
         private Long discussId;
 
         DiscussSendMessageEntity(String messageType, Long sourceId, List<MessageSegment> message) {
@@ -34,7 +34,7 @@ public class SendMessageEntity {
     @EqualsAndHashCode(callSuper = true)
     @Data
     public static final class GroupSendMessageEntity extends SendMessageEntity {
-        @SerializedName("group_id")
+        @JsonProperty("group_id")
         private Long groupId;
 
         GroupSendMessageEntity(String messageType, Long sourceId, List<MessageSegment> message) {
@@ -48,7 +48,7 @@ public class SendMessageEntity {
     @EqualsAndHashCode(callSuper = true)
     @Data
     public static final class PrivateSendMessageEntity extends SendMessageEntity{
-        @SerializedName("user_id")
+        @JsonProperty("user_id")
         private Long userId;
 
         PrivateSendMessageEntity(String messageType, Long sourceId, List<MessageSegment> message) {

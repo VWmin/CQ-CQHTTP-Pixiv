@@ -1,8 +1,11 @@
 package vwmin.coolq.function.pixiv.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.client.utils.URIUtils;
 import org.springframework.stereotype.Service;
-import vwmin.coolq.configuration.BotConfig;
+import org.springframework.web.client.RestTemplate;
+import vwmin.coolq.config.BotConfig;
 import vwmin.coolq.function.pixiv.entity.IllustResponse;
 import vwmin.coolq.function.pixiv.entity.ListIllustResponse;
 import vwmin.coolq.function.pixiv.entity.UserResponse;
@@ -11,50 +14,51 @@ import vwmin.coolq.network.calladapter.ObservableCallAdapterFactory;
 import vwmin.coolq.network.converter.GsonConverterFactory;
 import vwmin.coolq.util.StringUtil;
 
+import javax.annotation.Resource;
 import java.io.IOException;
 
 @Service
 @Slf4j
 public class PixivServiceImpl implements PixivService{
-    private final PixivApi pixivApi;
+    private final RestTemplate restTemplate;
+    private final BotConfig botConfig;
 
 
-
-    public PixivServiceImpl(BotConfig botConfig){
-        NetworkClient<PixivApi> client = new NetworkClient<>(botConfig.getPixivApi(),
-                PixivApi.class, ObservableCallAdapterFactory.create(), GsonConverterFactory.create());
-        this.pixivApi = client.getApi();
+    public PixivServiceImpl(BotConfig botConfig, RestTemplate restTemplate){
+        this.botConfig = botConfig;
+        this.restTemplate = restTemplate;
     }
 
 
     @Override
-    public ListIllustResponse getRank(String mode, String date) throws IOException {
-        return pixivApi.getRank(mode, date).result();
+    public ListIllustResponse getRank(String mode, String date) {
+        String url = botConfig.getPixivApi() + "/illust/ranking";
+//        URI uri = new URIBuilder().addParameter("mode", mode);
+        return restTemplate.getForObject(url, ListIllustResponse.class);
     }
 
     @Override
-    public IllustResponse getIllustById(Integer illustId) throws IOException {
-        return pixivApi.getIllustById(String.valueOf(illustId)).result();
+    public IllustResponse getIllustById(Integer illustId) {
+        String url = botConfig.getPixivApi() + "/illust/detail";
+        return restTemplate.getForObject(url, IllustResponse.class);
     }
 
     @Override
-    public UserResponse getUserById(Integer userId) throws IOException {
-        return pixivApi.getUserById(String.valueOf(userId)).result();
+    public UserResponse getUserById(Integer userId) {
+        String url = botConfig.getPixivApi() + "/user/detail";
+        return restTemplate.getForObject(url, UserResponse.class);
     }
 
     @Override
     public ListIllustResponse getIllustByWord(String word, String sort, String searchTarget) throws IOException {
-        ListIllustResponse result =
-                pixivApi.getIllustByWord(word, sort, searchTarget).result();
-        log.info("response for '/search/illust' >> "+ StringUtil.getDigest(result.toString()));
-        return result;
+        String url = botConfig.getPixivApi() + "/search/illust";
+        return restTemplate.getForObject(url, ListIllustResponse.class);
     }
 
     @Override
-    public ListIllustResponse getNext(String nextUrl) throws IOException {
-        ListIllustResponse response = pixivApi.getNext(nextUrl).result();
-        log.info("response for '/next' >> "+ StringUtil.getDigest(response.toString()));
-        return response;
+    public ListIllustResponse getNext(String nextUrl) {
+        String url = botConfig.getPixivApi() + "/next";
+        return restTemplate.getForObject(url, ListIllustResponse.class);
     }
 
 

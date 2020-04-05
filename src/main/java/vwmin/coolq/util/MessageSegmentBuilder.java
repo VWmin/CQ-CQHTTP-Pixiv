@@ -3,7 +3,7 @@ package vwmin.coolq.util;
 
 import lombok.extern.slf4j.Slf4j;
 import vwmin.coolq.SpringUtil;
-import vwmin.coolq.configuration.BotConfig;
+import vwmin.coolq.config.BotConfig;
 import vwmin.coolq.entity.MessageSegment;
 
 import java.io.IOException;
@@ -93,13 +93,13 @@ public class MessageSegmentBuilder {
 
     /**
      * at某个QQ
-     * @param user_id QQ号
+     * @param userId QQ号
      * @return 实例自身
      */
-    public MessageSegmentBuilder addAtSegment(Long user_id){
+    public MessageSegmentBuilder addAtSegment(Long userId){
         MessageSegment segment = new MessageSegment();
         segment.setType("at");
-        segment.addData("qq", user_id.toString());
+        segment.addData("qq", userId);
 
         segments.add(segment);
 

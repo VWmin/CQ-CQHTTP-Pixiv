@@ -1,0 +1,15 @@
+server:
+  port: 5699
+spring:
+  application:
+    name: pixiv-cqhttp-bot
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 121.36.230.118:8847
+        namespace: 8418e5da-8fd6-429a-8bea-0372268f79d7
+
+      config:
+        server-addr: 121.36.230.118:8847
+        file-extension: yml
+        namespace: 8418e5da-8fd6-429a-8bea-0372268f79d7

@@ -8,7 +8,7 @@ import java.util.Map;
 @Data
 public class MessageSegment {
     private String type;
-    private Map<String, String> data;
+    private Map<String, Object> data;
 
 
 
@@ -16,7 +16,7 @@ public class MessageSegment {
         this.data = new HashMap<>();
     }
 
-    public void addData(String key, String val){
+    public void addData(String key, Object val){
         data.put(key, val);
     }
 

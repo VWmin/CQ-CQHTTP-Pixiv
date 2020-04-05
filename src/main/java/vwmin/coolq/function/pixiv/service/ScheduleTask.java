@@ -2,7 +2,7 @@ package vwmin.coolq.function.pixiv.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import vwmin.coolq.configuration.BotConfig;
+import vwmin.coolq.config.BotConfig;
 
 @Slf4j
 @Component

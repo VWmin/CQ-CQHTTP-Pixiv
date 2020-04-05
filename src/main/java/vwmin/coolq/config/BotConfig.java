@@ -1,7 +1,8 @@
-package vwmin.coolq.configuration;
+package vwmin.coolq.config;
 
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -14,6 +15,7 @@ public class BotConfig {
     private String cqClientUrl;
 
     @Bean
+    @LoadBalanced
     public RestTemplate restTemplate(){
         return new RestTemplate();
     }

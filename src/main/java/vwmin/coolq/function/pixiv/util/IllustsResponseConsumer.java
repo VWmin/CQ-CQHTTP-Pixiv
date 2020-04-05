@@ -2,14 +2,13 @@ package vwmin.coolq.function.pixiv.util;
 
 import lombok.extern.slf4j.Slf4j;
 import vwmin.coolq.SpringUtil;
-import vwmin.coolq.configuration.BotConfig;
+import vwmin.coolq.config.BotConfig;
 import vwmin.coolq.entity.MessageSegment;
 import vwmin.coolq.function.pixiv.entity.ListIllustResponse;
 import vwmin.coolq.util.BaseConsumer;
 import vwmin.coolq.util.MessageSegmentBuilder;
 
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
