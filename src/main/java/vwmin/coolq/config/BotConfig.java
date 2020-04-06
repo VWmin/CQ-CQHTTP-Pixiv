@@ -14,9 +14,14 @@ public class BotConfig {
     private String pixivApi;
     private String cqClientUrl;
 
-    @Bean
+    @Bean("microServiceTemplate")
     @LoadBalanced
-    public RestTemplate restTemplate(){
+    public RestTemplate microServiceTemplate(){
+        return new RestTemplate();
+    }
+
+    @Bean("normalRestTemplate")
+    public RestTemplate normalRestTemplate(){
         return new RestTemplate();
     }
 

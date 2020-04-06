@@ -28,11 +28,9 @@ public class CoolqApplicationTests {
     @Autowired
     BotConfig botConfig;
 
-    @Autowired
-    RestTemplate restTemplate;
-
     @Test
     public void contextLoads() {
+
     }
 
     @Test

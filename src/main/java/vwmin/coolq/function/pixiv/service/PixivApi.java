@@ -4,8 +4,8 @@ package vwmin.coolq.function.pixiv.service;
 import vwmin.coolq.function.pixiv.entity.IllustResponse;
 import vwmin.coolq.function.pixiv.entity.ListIllustResponse;
 import vwmin.coolq.function.pixiv.entity.UserResponse;
-import vwmin.coolq.network.annotation.*;
-import vwmin.coolq.network.calladapter.Observable;
+import com.vwmin.restproxy.annotations.GET;
+import com.vwmin.restproxy.annotations.Query;
 
 /**
  * @author Min
@@ -14,21 +14,25 @@ public interface PixivApi {
 
 
     @GET("/illust/ranking")
-    Observable<ListIllustResponse> getRank(@Query("mode") String mode,
-                                           @Query(value = "date", required = false) String date);
+    ListIllustResponse getRank(
+            @Query("mode") String mode,
+            @Query(value = "date", required = false) String date
+    );
 
     @GET("/illust/detail")
-    Observable<IllustResponse> getIllustById(@Query("illust_id") String id);
+    IllustResponse getIllustById(@Query("illust_id") Integer id);
 
     @GET("/user/detail")
-    Observable<UserResponse> getUserById(@Query("userId") String id);
+    UserResponse getUserById(@Query("userId") Integer id);
 
     @GET("/search/illust")
-    Observable<ListIllustResponse> getIllustByWord(@Query("word") String word,
-                                                   @Query("sort") String sort,
-                                                   @Query("search_type") String searchTarget);
+    ListIllustResponse getIllustByWord(
+            @Query("word") String word,
+            @Query("sort") String sort,
+            @Query("search_type") String searchTarget
+    );
 
     @GET("/next")
-    Observable<ListIllustResponse> getNext(@Query("next_url") String nextUrl);
+    ListIllustResponse getNext(@Query("next_url") String nextUrl);
 
 }

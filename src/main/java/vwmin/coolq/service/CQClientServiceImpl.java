@@ -1,6 +1,8 @@
 package vwmin.coolq.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.web.client.RestTemplate;
@@ -13,11 +15,14 @@ import javax.annotation.Resource;
 @Service
 public class CQClientServiceImpl implements CQClientService {
 
-    @Resource
-    private RestTemplate restTemplate;
+    private final RestTemplate restTemplate;
 
-    @Resource
-    private BotConfig botConfig;
+    private final BotConfig botConfig;
+
+    public CQClientServiceImpl(@Qualifier("normalRestTemplate") RestTemplate restTemplate, BotConfig botConfig) {
+        this.restTemplate = restTemplate;
+        this.botConfig = botConfig;
+    }
 
     @Override
     public void sendMessage(SendMessageEntity send) {

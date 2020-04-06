@@ -1,27 +1,23 @@
 package vwmin.coolq.function.setu.service;
 
+import com.vwmin.restproxy.RestProxy;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 import vwmin.coolq.function.setu.entity.SetuEntity;
 import vwmin.coolq.function.setu.entity.SetuCommandParam;
-import vwmin.coolq.network.NetworkClient;
-import vwmin.coolq.network.calladapter.ObservableCallAdapterFactory;
-import vwmin.coolq.network.converter.GsonConverterFactory;
-
-import java.io.IOException;
 
 @Service
 public class SetuServiceImpl implements SetuService {
     private final static String BASE_URL = "https://api.lolicon.app";
     private final SetuApi setuApi;
 
-    public SetuServiceImpl(){
-        NetworkClient<SetuApi> client = new NetworkClient<>(BASE_URL, SetuApi.class,
-                ObservableCallAdapterFactory.create(), GsonConverterFactory.create());
-        this.setuApi = client.getApi();
+    public SetuServiceImpl(@Qualifier("normalRestTemplate")RestTemplate restTemplate){
+        this.setuApi = new RestProxy<>(BASE_URL, SetuApi.class, restTemplate).getApi();
     }
 
     @Override
-    public SetuEntity setu(SetuCommandParam... parameters) throws IOException {
+    public SetuEntity setu(SetuCommandParam... parameters) {
         String r18 = null;
         String keyword = null;
         String num = null;
@@ -48,6 +44,6 @@ public class SetuServiceImpl implements SetuService {
                     break;
             }
         }
-        return setuApi.setu(r18, keyword, num, proxy, size1200).result();
+        return setuApi.setu(r18, keyword, num, proxy, size1200);
     }
 }
