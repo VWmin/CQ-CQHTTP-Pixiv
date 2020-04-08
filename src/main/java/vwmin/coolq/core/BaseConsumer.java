@@ -1,4 +1,4 @@
-package vwmin.coolq.util;
+package vwmin.coolq.core;
 
 public interface BaseConsumer {
 }

@@ -1,12 +1,11 @@
 package vwmin.coolq.function.setu.util;
 
-import org.springframework.util.Assert;
 import vwmin.coolq.entity.MessageSegment;
 import vwmin.coolq.exception.EmptyDataException;
 import vwmin.coolq.function.setu.entity.SetuEntity;
-import vwmin.coolq.util.BaseConsumer;
+import vwmin.coolq.core.BaseConsumer;
 import vwmin.coolq.util.EmptyDataUtil;
-import vwmin.coolq.util.MessageSegmentBuilder;
+import vwmin.coolq.core.MessageSegmentBuilder;
 
 import java.io.IOException;
 import java.util.List;

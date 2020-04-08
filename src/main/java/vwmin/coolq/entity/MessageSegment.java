@@ -10,8 +10,6 @@ public class MessageSegment {
     private String type;
     private Map<String, Object> data;
 
-
-
     public MessageSegment(){
         this.data = new HashMap<>();
     }

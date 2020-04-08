@@ -3,7 +3,7 @@ package vwmin.coolq.function.pixiv.service;
 import vwmin.coolq.function.pixiv.entity.IllustResponse;
 import vwmin.coolq.function.pixiv.entity.ListIllustResponse;
 import vwmin.coolq.function.pixiv.entity.UserResponse;
-import vwmin.coolq.service.BaseService;
+import vwmin.coolq.core.BaseService;
 
 import java.io.IOException;
 

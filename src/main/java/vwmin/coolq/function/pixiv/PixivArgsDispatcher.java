@@ -6,13 +6,11 @@ import org.springframework.stereotype.Component;
 import vwmin.coolq.entity.*;
 import vwmin.coolq.function.Command;
 import vwmin.coolq.function.pixiv.service.PixivService;
-import vwmin.coolq.service.ArgsDispatcher;
-import vwmin.coolq.service.BaseService;
-import vwmin.coolq.service.MessageSender;
+import vwmin.coolq.core.ArgsDispatcher;
+import vwmin.coolq.core.BaseService;
+import vwmin.coolq.core.MessageSender;
 import vwmin.coolq.service.CQClientService;
 import vwmin.coolq.session.BaseSession;
-
-import java.io.IOException;
 
 
 /**

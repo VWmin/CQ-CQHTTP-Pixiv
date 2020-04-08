@@ -3,7 +3,7 @@ package vwmin.coolq.function.saucenao.util;
 import lombok.extern.slf4j.Slf4j;
 import vwmin.coolq.entity.MessageSegment;
 import vwmin.coolq.function.saucenao.entity.SaucenaoEntity;
-import vwmin.coolq.util.MessageSegmentBuilder;
+import vwmin.coolq.core.MessageSegmentBuilder;
 
 import java.io.IOException;
 import java.util.List;

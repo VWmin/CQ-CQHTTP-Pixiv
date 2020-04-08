@@ -6,8 +6,8 @@ import vwmin.coolq.enums.ArgsDispatcherType;
 import vwmin.coolq.enums.MessageType;
 import vwmin.coolq.exception.EmptyDataException;
 import vwmin.coolq.function.Command;
-import vwmin.coolq.util.BaseConsumer;
-import vwmin.coolq.util.ErrorConsumer;
+import vwmin.coolq.core.BaseConsumer;
+import vwmin.coolq.core.ErrorConsumer;
 
 import java.io.IOException;
 

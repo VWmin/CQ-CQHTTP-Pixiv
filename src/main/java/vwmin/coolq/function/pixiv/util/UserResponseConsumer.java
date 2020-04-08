@@ -2,7 +2,7 @@ package vwmin.coolq.function.pixiv.util;
 
 import vwmin.coolq.entity.MessageSegment;
 import vwmin.coolq.function.pixiv.entity.UserResponse;
-import vwmin.coolq.util.MessageSegmentBuilder;
+import vwmin.coolq.core.MessageSegmentBuilder;
 
 import java.util.List;
 

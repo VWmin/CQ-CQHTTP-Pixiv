@@ -1,6 +1,6 @@
 package vwmin.coolq.controller;
 
-import com.google.gson.Gson;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
@@ -9,7 +9,7 @@ import vwmin.coolq.enums.ArgsDispatcherType;
 import vwmin.coolq.enums.MessageType;
 import vwmin.coolq.function.pixiv.service.ScheduleTask;
 import vwmin.coolq.function.setu.SetuSession;
-import vwmin.coolq.service.ArgsDispatcher;
+import vwmin.coolq.core.ArgsDispatcher;
 import vwmin.coolq.session.BaseSession;
 import vwmin.coolq.function.pixiv.RankSession;
 import vwmin.coolq.function.saucenao.SearchSession;
@@ -28,7 +28,7 @@ import java.util.regex.Pattern;
 @Slf4j
 @RestController
 public class PostController {
-    private static final Gson GSON = new Gson();
+    private final ObjectMapper mapper = new ObjectMapper();
     private static final Pattern REGEX_MESSAGE_TYPE = Pattern.compile("\"message_type\":\".*?\"");
     private static final Pattern REGEX_POST_TYPE = Pattern.compile("\"post_type\":\".*?\"");
 
@@ -49,27 +49,31 @@ public class PostController {
 
 
     @PostMapping("")
-    public QuickReply printPostContent(HttpServletRequest request){
+    public void handRequest(HttpServletRequest request){
         // 排除非CQ客户端发来的请求
         if(!request.getHeader("user-agent").startsWith("CQHttp")){
-            return null;
+            return ;
         }
 
         // 排除错误的请求体
         String requestBody =  getRequestBody(request);
         if("jsonError".equals(requestBody)){
-            return null;
+            return ;
         }
 
         // 排除非message类型的上报
         String postType = getPostType(requestBody);
         if(!"message".equals(postType)){
-            return null;
+            return ;
         }
 
         // 包装收到的消息
-        BaseMessage message = processMessage(requestBody);
-        Assert.notNull(message, "message解析错误，或者message_type=discuss.");
+        BaseMessage message;
+        try {
+            message = processMessage(requestBody);
+        } catch (IOException e) {
+            throw new IllegalArgumentException("message解析错误，"+ e.getMessage() +" >>> {"+ requestBody +"}");
+        }
         message.setArgs(arg0Preprocess(message.getArgs()));
         log.info("收到上报数据 >> "+message);
 
@@ -80,7 +84,7 @@ public class PostController {
             }
         }
 
-        final Long userId = message.getUser_id();
+        final Long userId = message.getUserId();
         final String arg0 = message.getArgs()[0];
         final String[] args = message.getArgs();
         if(sessionMap.get(userId) != null){
@@ -88,7 +92,7 @@ public class PostController {
             BaseSession session = sessionMap.get(userId);
             if(getBelong(arg0) == session.getBelong()){
                 //会话存在时，新命令属于原会话类型
-                session.update(((HasId)message).getId(), message.getMessage_type(), message.getArgs());
+                session.update(((HasId)message).getId(), message.getMessageType(), message.getArgs());
                 argsDispatcherMap.get(session.getBelong().getKey()).createSender(session, args).send();
             }else{
                 //会话存在时，新命令不属于原会话类型
@@ -101,14 +105,13 @@ public class PostController {
             //如果map中没有找到id-->session
             BaseSession session = creatSession(message);
             if(session == null) {
-                return null;
+                return ;
             }
             sessionMap.put(userId, session);
             argsDispatcherMap.get(getBelong(arg0).getKey()).createSender(session, args).send();
 
         }
 
-        return null;
     }
 
 
@@ -148,9 +151,9 @@ public class PostController {
 
     /**新创建的session需要才这里与命令进行关联*/
     private BaseSession creatSession(BaseMessage message) {
-        Long userId = message.getUser_id();
+        Long userId = message.getUserId();
         Long sourceId = ((HasId)message).getId();
-        MessageType messageType = MessageType.valueOf(message.getMessage_type().toUpperCase());
+        MessageType messageType = MessageType.valueOf(message.getMessageType().toUpperCase());
 
         switch (message.getArgs()[0]){
             case "rank":
@@ -167,18 +170,6 @@ public class PostController {
 
         return null;
     }
-
-    @GetMapping("")
-    public String test(){
-        return "Hello ?";
-    }
-
-//    @GetMapping("/update/rank")
-//    public String updateRank(){
-//        scheduleTask.download();
-//        return "我试试？";
-//    }
-
 
     private String getRequestBody(HttpServletRequest request){
         BufferedReader bufferedReader;
@@ -214,7 +205,7 @@ public class PostController {
         }
     }
 
-    private BaseMessage processMessage(String requestBody){
+    private BaseMessage processMessage(String requestBody) throws IOException {
         String messageType = getMessageType(requestBody);
         Assert.notNull(messageType, "messageType could not be null.");
 
@@ -236,12 +227,12 @@ public class PostController {
         return message;
     }
 
-    private GroupMessage processGroupMessage(String requestBody) {
-        return GSON.fromJson(requestBody, GroupMessage.class);
+    private GroupMessage processGroupMessage(String requestBody) throws IOException {
+        return mapper.readValue(requestBody, GroupMessage.class);
     }
 
-    private PrivateMessage processPrivateMessage(String requestBody) {
-        return GSON.fromJson(requestBody, PrivateMessage.class);
+    private PrivateMessage processPrivateMessage(String requestBody) throws IOException {
+        return mapper.readValue(requestBody, PrivateMessage.class);
     }
 
     private String getMessageType(String requestBody){

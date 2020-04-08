@@ -1,4 +1,4 @@
-package vwmin.coolq.util;
+package vwmin.coolq.core;
 
 
 import lombok.extern.slf4j.Slf4j;

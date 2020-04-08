@@ -1,20 +1,31 @@
 package vwmin.coolq.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import org.springframework.context.annotation.Bean;
 
 import java.util.List;
 
 @Data
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class BaseMessage {
-    private String post_type;
-    private String message_type;
+    @JsonProperty("post_type")
+    private String postType;
 
-    private Integer message_id;
-    private Long user_id;
+    @JsonProperty("message_type")
+    private String messageType;
+
+    @JsonProperty("message_id")
+    private Integer messageId;
+
+    @JsonProperty("user_id")
+    private Long userId;
 
     private String message;
-    private String raw_message;
+
+    @JsonProperty("raw_message")
+    private String rawMessage;
 
     private Integer font;
     private Sender sender;

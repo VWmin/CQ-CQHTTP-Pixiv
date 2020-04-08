@@ -1,4 +1,4 @@
-package vwmin.coolq.session;
+package vwmin.coolq.function;
 
 import vwmin.coolq.function.pixiv.DataState;
 

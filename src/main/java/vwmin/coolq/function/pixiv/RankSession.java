@@ -4,6 +4,7 @@ import vwmin.coolq.entity.MessageSegment;
 import vwmin.coolq.entity.SendMessageEntity;
 import vwmin.coolq.enums.ArgsDispatcherType;
 import vwmin.coolq.enums.MessageType;
+import vwmin.coolq.function.WithDataState;
 import vwmin.coolq.function.pixiv.entity.ListIllustResponse;
 import vwmin.coolq.function.pixiv.util.IllustsResponseConsumer;
 import vwmin.coolq.session.*;

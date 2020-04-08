@@ -1,7 +1,7 @@
 package vwmin.coolq.function.saucenao.service;
 
 import vwmin.coolq.function.saucenao.entity.SaucenaoEntity;
-import vwmin.coolq.service.BaseService;
+import vwmin.coolq.core.BaseService;
 
 import java.io.IOException;
 

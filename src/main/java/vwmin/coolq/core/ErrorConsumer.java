@@ -1,5 +1,7 @@
-package vwmin.coolq.util;
+package vwmin.coolq.core;
 
+import vwmin.coolq.core.BaseConsumer;
+import vwmin.coolq.core.MessageSegmentBuilder;
 import vwmin.coolq.entity.MessageSegment;
 
 import java.util.List;

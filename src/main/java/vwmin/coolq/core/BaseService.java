@@ -1,4 +1,4 @@
-package vwmin.coolq.service;
+package vwmin.coolq.core;
 
 public interface BaseService {
 }

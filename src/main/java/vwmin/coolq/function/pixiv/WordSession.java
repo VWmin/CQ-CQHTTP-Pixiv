@@ -7,7 +7,7 @@ import vwmin.coolq.enums.MessageType;
 import vwmin.coolq.function.pixiv.entity.ListIllustResponse;
 import vwmin.coolq.function.pixiv.util.IllustsResponseConsumer;
 import vwmin.coolq.session.BaseSession;
-import vwmin.coolq.session.WithDataState;
+import vwmin.coolq.function.WithDataState;
 
 import java.io.IOException;
 import java.util.List;

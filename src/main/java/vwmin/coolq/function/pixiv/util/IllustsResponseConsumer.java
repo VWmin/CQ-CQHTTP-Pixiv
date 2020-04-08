@@ -5,8 +5,8 @@ import vwmin.coolq.SpringUtil;
 import vwmin.coolq.config.BotConfig;
 import vwmin.coolq.entity.MessageSegment;
 import vwmin.coolq.function.pixiv.entity.ListIllustResponse;
-import vwmin.coolq.util.BaseConsumer;
-import vwmin.coolq.util.MessageSegmentBuilder;
+import vwmin.coolq.core.BaseConsumer;
+import vwmin.coolq.core.MessageSegmentBuilder;
 
 import java.io.IOException;
 import java.util.List;

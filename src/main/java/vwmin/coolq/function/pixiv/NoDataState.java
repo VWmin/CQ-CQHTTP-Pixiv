@@ -1,6 +1,6 @@
 package vwmin.coolq.function.pixiv;
 
-import vwmin.coolq.session.WithDataState;
+import vwmin.coolq.function.WithDataState;
 
 import java.io.IOException;
 

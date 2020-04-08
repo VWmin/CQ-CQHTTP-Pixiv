@@ -2,8 +2,7 @@ package vwmin.coolq.function.pixiv;
 
 import vwmin.coolq.entity.MessageSegment;
 import vwmin.coolq.function.pixiv.util.IllustsResponseConsumer;
-import vwmin.coolq.session.WithDataState;
-import vwmin.coolq.util.BaseConsumer;
+import vwmin.coolq.function.WithDataState;
 
 import java.io.IOException;
 import java.util.List;

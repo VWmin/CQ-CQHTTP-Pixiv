@@ -4,17 +4,14 @@ package vwmin.coolq.function.setu;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.cli.ParseException;
 import org.springframework.stereotype.Component;
-import vwmin.coolq.entity.BaseMessage;
 import vwmin.coolq.entity.SendMessageEntity;
 import vwmin.coolq.function.Command;
 import vwmin.coolq.function.setu.service.SetuService;
-import vwmin.coolq.service.ArgsDispatcher;
-import vwmin.coolq.service.BaseService;
+import vwmin.coolq.core.ArgsDispatcher;
+import vwmin.coolq.core.BaseService;
 import vwmin.coolq.service.CQClientService;
-import vwmin.coolq.service.MessageSender;
+import vwmin.coolq.core.MessageSender;
 import vwmin.coolq.session.BaseSession;
-
-import java.io.IOException;
 
 @Slf4j
 @Component("setuArgsDispatcher")
