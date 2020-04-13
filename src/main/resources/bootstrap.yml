@@ -1,5 +1,4 @@
-server:
-  port: 5699
+
 spring:
   application:
     name: pixiv-cqhttp-bot
