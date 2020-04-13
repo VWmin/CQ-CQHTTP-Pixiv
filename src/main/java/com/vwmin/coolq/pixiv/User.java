@@ -10,7 +10,7 @@ import java.io.Serializable;
  * @date 2020/4/13 13:11
  */
 @Data
-public class UserResponse implements Serializable {
+public class User implements Serializable {
 
     /**
      * user : {"id":123,"name":"wagasian","account":"wohao0501","profile_image_urls":{"medium":"https://i.pximg.net/user-profile/img/2008/12/04/15/00/00/406776_4c394722161dc54f7aa647122061e6c9_170.jpg"},"comment":"web programer & illustrator & DAGASHI-YA","_followed":false}

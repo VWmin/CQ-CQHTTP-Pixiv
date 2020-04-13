@@ -9,6 +9,6 @@ import lombok.Data;
  * @date 2020/4/13 13:10
  */
 @Data
-public class IllustResponse{
-    private ListIllustResponse.IllustsBean illust;
+public class Illust {
+    private Illusts.IllustsBean illust;
 }

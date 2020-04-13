@@ -11,7 +11,7 @@ import java.util.List;
  * @date 2020/4/13 13:09
  */
 @Data
-public class ListIllustResponse implements Serializable {
+public class Illusts implements Serializable {
 
     private List<IllustsBean> illusts;
     private String next_url ;
@@ -41,7 +41,7 @@ public class ListIllustResponse implements Serializable {
         private List<TagsBean> tags;
         private List<String> tools;
         private List<MetaPagesBean> meta_pages;
-        private List<ListIllustResponse> illust;
+        private List<Illusts> illust;
 
         @Data
         public static class ImageUrlsBean  implements Serializable {

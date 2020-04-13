@@ -1,8 +1,8 @@
 package com.vwmin.coolq.saucenao;
 
-import com.vwmin.coolq.pixiv.IllustResponse;
+import com.vwmin.coolq.pixiv.Illust;
 import com.vwmin.coolq.pixiv.IllustUtils;
-import com.vwmin.coolq.pixiv.ListIllustResponse;
+import com.vwmin.coolq.pixiv.Illusts;
 import com.vwmin.coolq.pixiv.PixivApi;
 import com.vwmin.terminalservice.MessageSegmentBuilder;
 import com.vwmin.terminalservice.entity.MessageSegment;
@@ -63,9 +63,9 @@ public class SaucenaoConsumer {
 
 
         if(one.getHeader().getIndex_id() == 5){ //Pixiv
-            IllustResponse illustById = pixivApi.getIllustById(one.getData().getPixiv_id());
+            Illust illustById = pixivApi.getIllustById(one.getData().getPixiv_id());
             if(illustById!=null && illustById.getIllust()!=null){
-                ListIllustResponse.IllustsBean illust = illustById.getIllust();
+                Illusts.IllustsBean illust = illustById.getIllust();
                 fileName = illust.getId() + IllustUtils.getImgType(illust);
                 fileUrl = IllustUtils.getMetaSinglePage(illust);
             }
