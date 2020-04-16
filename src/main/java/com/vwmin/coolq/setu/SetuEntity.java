@@ -14,6 +14,7 @@ public class SetuEntity {
 
     private int code;
     private String msg;
+    private int quota;
     private int count;
     private List<DataBean> data;
 

@@ -8,6 +8,7 @@ import com.vwmin.terminalservice.entity.PostEntity;
 import com.vwmin.terminalservice.entity.ReplyEntity;
 import picocli.CommandLine;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -27,7 +28,7 @@ public class SetuCommandController implements Reply {
             SetuEntity setu = command.call();
             List<MessageSegment> one = new SetuConsumer(setu, postEntity.getUser_id()).getOne();
             return new ReplyEntity(one);
-        }catch (Exception e){
+        }catch (IOException e){
             e.printStackTrace();
             return new ReplyEntity(Utils.handError(e));
         }

@@ -1,5 +1,6 @@
 package com.vwmin.coolq.setu;
 
+import com.vwmin.coolq.conf.BotConfig;
 import picocli.CommandLine;
 
 import java.util.concurrent.Callable;
@@ -13,9 +14,11 @@ import java.util.concurrent.Callable;
 public class SetuCommand implements Callable<SetuEntity> {
 
     private final SetuApi setuApi;
+    private final String key;
 
-    public SetuCommand(SetuApi setuApi){
+    public SetuCommand(SetuApi setuApi, BotConfig config){
         this.setuApi = setuApi;
+        this.key = config.getSetuKey();
     }
 
 
@@ -26,7 +29,7 @@ public class SetuCommand implements Callable<SetuEntity> {
     private String word;
 
     @Override
-    public SetuEntity call() throws Exception {
-        return setuApi.setu(r18, word, 1, null, null );
+    public SetuEntity call() {
+        return setuApi.setu(r18, word, 1, null, null, key);
     }
 }

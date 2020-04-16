@@ -29,6 +29,7 @@ import com.vwmin.coolq.saucenao.SaucenaoApi;
 @ConfigurationProperties(prefix = "botconfig")
 public class BotConfig {
     private String pixivApi;
+    private String setuKey;
 
     @Bean("microServiceTemplate")
     @LoadBalanced

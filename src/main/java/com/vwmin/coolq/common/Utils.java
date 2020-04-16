@@ -1,5 +1,6 @@
 package com.vwmin.coolq.common;
 
+import com.vwmin.coolq.exception.UnexpectedStatusCodeException;
 import com.vwmin.terminalservice.MessageSegmentBuilder;
 import com.vwmin.terminalservice.entity.MessageSegment;
 import com.vwmin.coolq.exception.EmptyDataException;
@@ -33,8 +34,12 @@ public class Utils {
     }
 
     public static List<MessageSegment> handError(Exception e){
-        return new MessageSegmentBuilder()
-                .plainText(e.getMessage())
-                .build();
+        MessageSegmentBuilder builder = new MessageSegmentBuilder();
+        builder.plainText("Exception: \n");
+        if (e instanceof UnexpectedStatusCodeException){
+            builder.plainText("status code: "+((UnexpectedStatusCodeException) e).getCode() + "\t");
+        }
+        builder.plainText(e.getMessage());
+        return builder.build();
     }
 }
