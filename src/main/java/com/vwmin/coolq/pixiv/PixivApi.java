@@ -27,4 +27,7 @@ public interface PixivApi {
 
     @GET("/next")
     Illusts getNext(@Query("nextUrl") String nextUrl);
+
+    @GET("/illust/new?restrict=all")
+    Illusts getNewWorks();
 }

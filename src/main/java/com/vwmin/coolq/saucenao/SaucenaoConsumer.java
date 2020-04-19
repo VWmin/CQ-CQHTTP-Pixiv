@@ -1,9 +1,6 @@
 package com.vwmin.coolq.saucenao;
 
-import com.vwmin.coolq.pixiv.Illust;
-import com.vwmin.coolq.pixiv.IllustUtils;
-import com.vwmin.coolq.pixiv.Illusts;
-import com.vwmin.coolq.pixiv.PixivApi;
+import com.vwmin.coolq.pixiv.*;
 import com.vwmin.terminalservice.MessageSegmentBuilder;
 import com.vwmin.terminalservice.entity.MessageSegment;
 import lombok.extern.slf4j.Slf4j;
@@ -64,12 +61,11 @@ public class SaucenaoConsumer {
 
         if(one.getHeader().getIndex_id() == 5){ //Pixiv
             Illust illustById = pixivApi.getIllustById(one.getData().getPixiv_id());
-            if(illustById!=null && illustById.getIllust()!=null){
-                Illusts.IllustsBean illust = illustById.getIllust();
-                fileName = illust.getId() + IllustUtils.getImgType(illust);
-                fileUrl = IllustUtils.getMetaSinglePage(illust);
-            }
+            fileName = IllustUtils.genFileName(illustById);
+            fileUrl = IllustUtils.getMetaSinglePage(illustById);
+            new DownloadTask(illustById).run();
         }
+
 
         if(similarity < 50){
             builder.plainText("[找到图片相似度过低(" + one.getHeader().getSimilarity() + "%)，结果不给康了嗷，感兴趣请戳↓]\n")

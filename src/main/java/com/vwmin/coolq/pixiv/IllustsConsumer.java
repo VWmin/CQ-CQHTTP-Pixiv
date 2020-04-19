@@ -1,15 +1,11 @@
 package com.vwmin.coolq.pixiv;
 
-import com.vwmin.terminalservice.ImageUtils;
 import com.vwmin.terminalservice.MessageSegmentBuilder;
 import com.vwmin.terminalservice.entity.MessageSegment;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.http.Header;
-import org.apache.http.message.BasicHeader;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.*;
 
 import static com.vwmin.coolq.pixiv.IllustUtils.*;
 
@@ -44,17 +40,19 @@ public class IllustsConsumer {
             throw new IOException("看样子没找到任何结果呢 等会再试试看？");
         }
 
-        List<Illusts.IllustsBean> illusts = response.getIllusts();
+        List<Illust> illusts = response.getIllusts();
         illusts.removeIf(next -> !TYPE_ILLUST.equals(next.getType()));
 
-        asynchronousDownload();
+        asynchronousDownload(illusts, offset, PAGE_SIZE);
 
         int cnt = 0;
         for(int i = offset; cnt != PAGE_SIZE && i < illusts.size(); i++){
-            Illusts.IllustsBean illust = illusts.get(i);
+            Illust illust = illusts.get(i);
             cnt++;
-            builder.plainText(cnt+". "+illust.getTitle() + "  view: " + illust.getTotal_view() + " like: " + illust.getTotal_bookmarks() + "\n");
-            builder.image(illust.getId()+ getImgType(illust), getMetaSinglePage(illust)).plainText("\n");
+            builder.plainText(cnt+". "+illust.getTitle()
+                    + "  view: " + illust.getTotal_view() + " like: " + illust.getTotal_bookmarks()
+                    + "\n");
+            builder.image(genFileName(illust), getMetaSinglePage(illust)).plainText("\n");
         }
 
         offset += cnt;
@@ -65,81 +63,6 @@ public class IllustsConsumer {
         }
 
         return builder.build();
-    }
-
-    private static class DownLoadTask implements Runnable{
-        private final Header HEADER = new BasicHeader("Referer", "https://app-api.pixiv.net/");
-        private final long id;
-        private final String filename;
-        private final String url;
-        private final Semaphore semaphore;
-
-        DownLoadTask(long id, String filename, String url, Semaphore semaphore){
-            this.id = id;
-            this.filename = filename;
-            this.url = url;
-            this.semaphore = semaphore;
-        }
-
-        @Override
-        public void run() {
-            log.info("downloading >> " + id);
-            try {
-                ImageUtils.downloadImage(filename, url, new Header[]{HEADER});
-            } catch (IOException e) {
-                log.warn("download fail >> " + id);
-                e.printStackTrace();
-            } finally {
-                semaphore.release();
-            }
-        }
-    }
-
-    private void asynchronousDownload() throws IOException {
-        List<Illusts.IllustsBean> illusts = response.getIllusts();
-        Semaphore semaphore = new Semaphore(0);
-
-        /*
-         * 核心线程池大小
-         * 最大线程池大小
-         * 线程池最大空闲持剑
-         * 时间单位
-         * 线程等待队列
-         * 线程创建工厂
-         * 拒绝策略
-         */
-        ThreadPoolExecutor pool = new ThreadPoolExecutor(
-                1,
-                10,
-                1000,
-                TimeUnit.MILLISECONDS,
-                new ArrayBlockingQueue<Runnable>(10),
-                Executors.defaultThreadFactory(),
-                new ThreadPoolExecutor.DiscardPolicy()
-        );
-
-        int cnt=0;
-        for (int i=offset; cnt != PAGE_SIZE && i<illusts.size(); i++) {
-            Illusts.IllustsBean illust = illusts.get(i);
-            String filename = illust.getId() + getImgType(illust);
-            String url = getMetaSinglePage(illust);
-            int id = illust.getId();
-
-            cnt++;
-            if (!ImageUtils.isExist(filename)) {
-                pool.execute(new DownLoadTask(id, filename, url, semaphore));
-            } else {
-                log.info("passed >> " + illust.getId());
-                semaphore.release();
-            }
-
-        }
-
-        try {
-            semaphore.tryAcquire(cnt, 180, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
     }
 
 

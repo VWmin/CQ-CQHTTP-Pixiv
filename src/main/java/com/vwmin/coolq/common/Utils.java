@@ -1,6 +1,7 @@
 package com.vwmin.coolq.common;
 
 import com.vwmin.coolq.exception.UnexpectedStatusCodeException;
+import com.vwmin.terminalservice.CQClientApi;
 import com.vwmin.terminalservice.MessageSegmentBuilder;
 import com.vwmin.terminalservice.entity.MessageSegment;
 import com.vwmin.coolq.exception.EmptyDataException;
@@ -33,7 +34,8 @@ public class Utils {
         }
     }
 
-    public static List<MessageSegment> handError(Exception e){
+    //包装错误信息成可发送的实体
+    public static List<MessageSegment> handleException(Exception e){
         MessageSegmentBuilder builder = new MessageSegmentBuilder();
         builder.plainText("Exception: \n");
         if (e instanceof UnexpectedStatusCodeException){

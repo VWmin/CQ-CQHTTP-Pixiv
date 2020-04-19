@@ -30,7 +30,7 @@ public class SetuCommandController implements Reply {
             return new ReplyEntity(one);
         }catch (IOException e){
             e.printStackTrace();
-            return new ReplyEntity(Utils.handError(e));
+            return new ReplyEntity(Utils.handleException(e));
         }
     }
 }

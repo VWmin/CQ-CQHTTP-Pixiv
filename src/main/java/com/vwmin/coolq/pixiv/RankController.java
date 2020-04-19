@@ -29,7 +29,7 @@ public class RankController implements Reply {
             return new ReplyEntity(one);
         }catch (Exception e){
             e.printStackTrace();
-            return new ReplyEntity(Utils.handError(e));
+            return new ReplyEntity(Utils.handleException(e));
         }
     }
 }

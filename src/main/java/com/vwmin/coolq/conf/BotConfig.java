@@ -14,6 +14,10 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 import com.vwmin.coolq.saucenao.SaucenaoApi;
@@ -47,6 +51,22 @@ public class BotConfig {
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.setRequestFactory(factory);
         return restTemplate;
+    }
+
+    @Bean
+    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory factory){
+        RedisTemplate<String, Object> template = new RedisTemplate<>();
+        template.setConnectionFactory(factory);
+        StringRedisSerializer stringRedisSerializer = new StringRedisSerializer();
+        Jackson2JsonRedisSerializer<Object> serializer = new Jackson2JsonRedisSerializer<>(Object.class);
+        // 设置value的序列化规则和key的序列化规则
+        template.setKeySerializer(stringRedisSerializer);
+        template.setValueSerializer(serializer);
+        template.setHashKeySerializer(stringRedisSerializer);
+        template.setHashValueSerializer(serializer);
+        template.setDefaultSerializer(serializer);
+        template.afterPropertiesSet();
+        return template;
     }
 
     @Bean

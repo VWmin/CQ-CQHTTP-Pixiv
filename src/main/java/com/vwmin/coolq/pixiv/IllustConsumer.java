@@ -31,8 +31,8 @@ public class IllustConsumer {
             return builder.build();
         }
 
-        builder.image(illust.getIllust().getId()+IllustUtils.getImgType(illust.getIllust()),
-                IllustUtils.getMetaSinglePage(illust.getIllust()));
+        builder.image(IllustUtils.genFileName(illust),
+                IllustUtils.getMetaSinglePage(illust));
 
         return builder.build();
 

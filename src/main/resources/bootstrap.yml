@@ -1,4 +1,5 @@
 
+
 spring:
   application:
     name: pixiv-cqhttp-bot
@@ -12,3 +13,14 @@ spring:
         server-addr: 121.36.230.118:8847
         file-extension: yml
         namespace: 8418e5da-8fd6-429a-8bea-0372268f79d7
+  redis:
+    host: 121.36.230.118
+    password: justmiss.redis
+    database: 1
+    timeout: 2000
+    lettuce:
+      pool:
+        max-active: 10 # 最大连接数
+        max-idle: 6 # 最大空闲数
+        min-idle: 2 # 最小空闲数
+
