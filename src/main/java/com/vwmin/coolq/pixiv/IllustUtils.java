@@ -48,7 +48,7 @@ public class IllustUtils {
         /*
          * 核心线程池大小
          * 最大线程池大小
-         * 线程池最大空闲持剑
+         * 线程池最大空闲时间
          * 时间单位
          * 线程等待队列
          * 线程创建工厂
@@ -56,10 +56,10 @@ public class IllustUtils {
          */
         ThreadPoolExecutor pool = new ThreadPoolExecutor(
                 1,
-                10,
+                pageSize,
                 1000,
                 TimeUnit.MILLISECONDS,
-                new ArrayBlockingQueue<>(10),
+                new ArrayBlockingQueue<>(pageSize),
                 Executors.defaultThreadFactory(),
                 new ThreadPoolExecutor.DiscardPolicy()
         );

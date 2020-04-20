@@ -4,6 +4,9 @@ import com.vwmin.terminalservice.CommandInterceptor;
 import com.vwmin.terminalservice.entity.PostEntity;
 import org.springframework.stereotype.Component;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * @author vwmin
  * @version 1.0
@@ -11,13 +14,16 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class SetuInterceptor implements CommandInterceptor {
+
+    private final Pattern REGEX = Pattern.compile(".*([一张色图]).*([一张色图]).*([一张色图]).*([一张色图]).*");
+
     @Override
     public String handle(String raw) {
-        return raw.replace("一张色图", "setu");
+        return REGEX.matcher(raw).replaceAll("setu");
     }
 
     @Override
     public boolean isMatch(PostEntity postEntity) {
-        return postEntity.getMessage().startsWith("一张色图");
+        return  REGEX.matcher(postEntity.getMessage()).matches() ;
     }
 }
