@@ -1,0 +1,115 @@
+{
+    "character":[
+        {"realName": "彼岸双生","rarity": 5,"amount": 30,"rank": "S"},
+        {"realName": "辉骑士·月魄","rarity": 5,"amount": 30,"rank": "S"},
+
+        {"realName": "女武神·荣光","rarity": 4,"amount": 18,"rank": "A"},
+        {"realName": "女武神·强袭","rarity": 4,"amount": 18,"rank": "A"},
+        {"realName": "幻海梦蝶","rarity": 4,"amount": 18,"rank": "A"},
+        {"realName": "极地战刃","rarity": 4,"amount": 30,"rank": "A"},
+        {"realName": "猎袭装·影铁","rarity": 4,"amount": 18,"rank": "A"},
+        {"realName": "白夜执事","rarity": 4,"amount": 18,"rank": "A"},
+        {"realName": "猎袭装·影铁","rarity": 4,"amount": 18,"rank": "A"},
+        {"realName": "蓝莓特攻","rarity": 4,"amount": 18,"rank": "A"}
+    ],
+    "stigma":[
+        {"realName":"但丁","rarity":4,"amount":1,"maxRarity":5},
+        {"realName":"罗伯特·皮里","rarity":4,"amount":1,"maxRarity":5},
+        {"realName":"迪拉克","rarity":4,"amount":1,"maxRarity":5},
+        {"realName":"泰勒斯","rarity":4,"amount":1,"maxRarity":5},
+        {"realName":"卡拉瓦乔","rarity":4,"amount":1,"maxRarity":5},
+        {"realName":"卡莲·颂歌","rarity":4,"amount":1,"maxRarity":5},
+        {"realName":"莫奈","rarity":4,"amount":1,"maxRarity":5},
+        {"realName":"诺贝尔","rarity":4,"amount":1,"maxRarity":5},
+        {"realName":"薛定谔","rarity":4,"amount":1,"maxRarity":5},
+        {"realName":"普朗克","rarity":4,"amount":1,"maxRarity":5},
+
+
+        {"realName":"时雨绮罗","rarity":3,"amount":1,"maxRarity":4},
+        {"realName":"阿提拉","rarity":3,"amount":1,"maxRarity":4},
+        {"realName":"奥吉尔","rarity":3,"amount":1,"maxRarity":4},
+        {"realName":"巴托里·伊丽莎白","rarity":3,"amount":1,"maxRarity":4},
+        {"realName":"坂本龙马","rarity":3,"amount":1,"maxRarity":4},
+        {"realName":"查理曼","rarity":3,"amount":1,"maxRarity":4},
+        {"realName":"尼古拉·特斯拉","rarity":3,"amount":1,"maxRarity":4},
+        {"realName":"呼邪","rarity":3,"amount":1,"maxRarity":4},
+        {"realName":"里纳尔多","rarity":3,"amount":1,"maxRarity":4},
+        {"realName":"时雨绮罗","rarity":3,"amount":1,"maxRarity":4},
+        {"realName":"伽利略","rarity":3,"amount":1,"maxRarity":4},
+        {"realName":"芥川龙之介","rarity":3,"amount":1,"maxRarity":4},
+        {"realName":"罗尔德·阿蒙森","rarity":3,"amount":1,"maxRarity":4},
+
+
+
+        {"realName":"夏洛特","rarity":2,"amount":1,"maxRarity":3},
+        {"realName":"维多利亚","rarity":2,"amount":1,"maxRarity":3},
+        {"realName":"莎莲娜","rarity":2,"amount":1,"maxRarity":3},
+        {"realName":"薇欧拉","rarity":2,"amount":1,"maxRarity":3}
+
+    ],
+    "equipment":[
+        {"realName":"雷刀·鬼角","rarity":4,"amount":1,"maxRarity":5},
+        {"realName":"破晓者·塔尔瓦","rarity":4,"amount":1,"maxRarity":5},
+        {"realName":"碎星者·维克兰特","rarity":4,"amount":1,"maxRarity":5},
+        {"realName":"极夜之赫卡忒","rarity":4,"amount":1,"maxRarity":5},
+        {"realName":"断光之努亚达","rarity":4,"amount":1,"maxRarity":5},
+        {"realName":"基因收割者","rarity":4,"amount":1,"maxRarity":5},
+        {"realName":"永寂之赫勒尔","rarity":4,"amount":1,"maxRarity":5},
+        {"realName":"11th圣遗物","rarity":4,"amount":1,"maxRarity":5},
+        {"realName":"天穹撕裂者","rarity":4,"amount":1,"maxRarity":5},
+        {"realName":"灵刀·樱吹雪","rarity":4,"amount":1,"maxRarity":5},
+        {"realName":"童谣","rarity":4,"amount":1,"maxRarity":5},
+        {"realName":"神陨剑·史尔特尔","rarity":4,"amount":1,"maxRarity":5},
+        {"realName":"永暮双狼","rarity":4,"amount":1,"maxRarity":5},
+        {"realName":"百手巨人初型","rarity":4,"amount":1,"maxRarity":5},
+
+
+        {"realName":"火妖精I型","rarity":3,"amount":1,"maxRarity":4},
+        {"realName":"火妖精II型","rarity":3,"amount":1,"maxRarity":4},
+        {"realName":"水妖精I型","rarity":3,"amount":1,"maxRarity":4},
+        {"realName":"水妖精II型","rarity":3,"amount":1,"maxRarity":4},
+        {"realName":"苗刀·电魂","rarity":3,"amount":1,"maxRarity":4},
+        {"realName":"苗刀·雷妖","rarity":3,"amount":1,"maxRarity":4},
+        {"realName":"脉冲太刀17式","rarity":3,"amount":1,"maxRarity":4},
+        {"realName":"脉冲太刀19式","rarity":3,"amount":1,"maxRarity":4},
+        {"realName":"马尔科夫A型","rarity":3,"amount":1,"maxRarity":4},
+        {"realName":"马尔科夫C型","rarity":3,"amount":1,"maxRarity":4},
+        {"realName":"阴极子炮07式","rarity":3,"amount":1,"maxRarity":4},
+        {"realName":"阴极子炮09式","rarity":3,"amount":1,"maxRarity":4},
+        {"realName":"超重剑·王蛇","rarity":3,"amount":1,"maxRarity":4},
+        {"realName":"超重剑·冲锋","rarity":3,"amount":1,"maxRarity":4},
+        {"realName":"电离共振剑","rarity":3,"amount":1,"maxRarity":4},
+        {"realName":"氮素结晶剑","rarity":3,"amount":1,"maxRarity":4},
+        {"realName":"黑色粉碎者","rarity":3,"amount":1,"maxRarity":4},
+        {"realName":"雷天使","rarity":3,"amount":1,"maxRarity":4},
+        {"realName":"火天使","rarity":3,"amount":1,"maxRarity":4},
+        {"realName":"CAS-X圣徒","rarity":3,"amount":1,"maxRarity":4},
+        {"realName":"白星驱逐者","rarity":3,"amount":1,"maxRarity":4},
+        {"realName":"黑耀切割","rarity":3,"amount":1,"maxRarity":4},
+        {"realName":"等离子长枪","rarity":3,"amount":1,"maxRarity":4},
+
+        {"realName":"M1911","rarity":2,"amount":1,"maxRarity":3},
+        {"realName":"Mig-7激光炮","rarity":2,"amount":1,"maxRarity":3},
+        {"realName":"USP改","rarity":2,"amount":1,"maxRarity":3},
+        {"realName":"防护腕甲","rarity":2,"amount":1,"maxRarity":3}
+
+    ],
+    "material":[
+        {"realName":"相转移镜面","rarity":4,"amount":1},
+        {"realName":"超小型反应炉","rarity":3,"amount":2},
+
+        {"realName":"双子灵魂结晶","rarity":4,"amount":2},
+        {"realName":"灵魂结晶","rarity":3,"amount":2},
+
+        {"realName":"吼咪宝藏","rarity":4,"amount":2},
+        {"realName":"吼美宝藏","rarity":4,"amount":5},
+        {"realName":"吼里宝藏","rarity":3,"amount":5},
+
+        {"realName":"初级技能材料","rarity":3,"amount":6},
+        {"realName":"特级学习材料","rarity":4,"amount":8},
+        {"realName":"高级学习材料","rarity":4,"amount":4},
+        {"realName":"高级技能材料","rarity":4,"amount":8}
+
+
+    ]
+}

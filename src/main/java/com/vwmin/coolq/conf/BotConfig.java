@@ -1,6 +1,9 @@
 package com.vwmin.coolq.conf;
 
 
+import com.vwmin.coolq.honkar3rd.ResourceManager;
+import com.vwmin.coolq.honkar3rd.gacha.CharacterSupply;
+import com.vwmin.coolq.honkar3rd.gacha.EquipmentSupply;
 import com.vwmin.coolq.pixiv.PixivApi;
 import com.vwmin.coolq.setu.SetuApi;
 import com.vwmin.restproxy.RestProxy;
@@ -21,6 +24,9 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 import com.vwmin.coolq.saucenao.SaucenaoApi;
+
+import java.io.IOException;
+import java.util.prefs.BackingStoreException;
 
 /**
  * @author vwmin
@@ -84,5 +90,25 @@ public class BotConfig {
     @Bean
     public PixivApi pixivApi(@Qualifier("microServiceTemplate") RestTemplate restTemplate){
         return new RestProxy<>(pixivApi, PixivApi.class, restTemplate).getApi();
+    }
+
+    @Bean("focusedSupplyA")
+    public EquipmentSupply focusedSupplyA(ResourceManager manager) throws IOException, BackingStoreException {
+        return new EquipmentSupply(manager, EquipmentSupply.FOCUSED_A);
+    }
+
+    @Bean("focusedSupplyB")
+    public EquipmentSupply focusedSupplyB(ResourceManager manager) throws IOException, BackingStoreException {
+        return new EquipmentSupply(manager, EquipmentSupply.FOCUSED_B);
+    }
+
+    @Bean("expansionSupplyA")
+    public CharacterSupply expansionSupplyA(ResourceManager manager) throws IOException, BackingStoreException {
+        return new CharacterSupply(manager);
+    }
+
+    @Bean("expansionSupplyB")
+    public EquipmentSupply expansionSupplyB(ResourceManager manager) throws IOException, BackingStoreException {
+        return new EquipmentSupply(manager, EquipmentSupply.EXPANSION_B);
     }
 }

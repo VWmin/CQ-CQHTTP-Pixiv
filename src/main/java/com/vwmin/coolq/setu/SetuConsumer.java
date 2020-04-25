@@ -16,11 +16,9 @@ import java.util.List;
  */
 public class SetuConsumer {
     private final SetuEntity setuEntity;
-    private final Long userId;
 
-    public SetuConsumer(SetuEntity setuEntity, Long userId){
+    public SetuConsumer(SetuEntity setuEntity){
         this.setuEntity = setuEntity;
-        this.userId = userId;
     }
 
     public List<MessageSegment> getOne() throws IOException {
