@@ -1,6 +1,7 @@
 package com.vwmin.coolq.pixiv;
 
 import com.vwmin.coolq.common.Utils;
+import com.vwmin.coolq.pixiv.entities.Illust;
 import com.vwmin.terminalservice.ImageUtils;
 import lombok.extern.slf4j.Slf4j;
 

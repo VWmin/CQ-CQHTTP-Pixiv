@@ -1,6 +1,7 @@
 package com.vwmin.coolq.pixiv;
 
 import com.vwmin.coolq.common.Utils;
+import com.vwmin.coolq.pixiv.entities.Illusts;
 import com.vwmin.terminalservice.CommandController;
 import com.vwmin.terminalservice.Reply;
 import com.vwmin.terminalservice.entity.MessageSegment;

@@ -1,6 +1,11 @@
 package com.vwmin.coolq.pixiv;
 
+import com.vwmin.coolq.pixiv.entities.Illust;
+import com.vwmin.coolq.pixiv.entities.Illusts;
+import com.vwmin.coolq.pixiv.entities.User;
+import com.vwmin.restproxy.annotations.Body;
 import com.vwmin.restproxy.annotations.GET;
+import com.vwmin.restproxy.annotations.POST;
 import com.vwmin.restproxy.annotations.Query;
 
 /**
@@ -29,5 +34,8 @@ public interface PixivApi {
     Illusts getNext(@Query("nextUrl") String nextUrl);
 
     @GET("/illust/new?restrict=all")
-    Illusts getNewWorks();
+    Illusts getNewWorks(@Query("username") String username);
+
+    @POST("/login")
+    void login(@Body("username") String username, @Body("password") String password);
 }

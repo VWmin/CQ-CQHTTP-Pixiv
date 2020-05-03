@@ -1,4 +1,4 @@
-package com.vwmin.coolq.pixiv;
+package com.vwmin.coolq.pixiv.entities;
 
 import lombok.Data;
 

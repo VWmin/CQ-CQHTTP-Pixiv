@@ -1,5 +1,6 @@
-package com.vwmin.coolq.pixiv;
+package com.vwmin.coolq.pixiv.entities;
 
+import com.vwmin.coolq.pixiv.entities.Illusts;
 import lombok.Data;
 
 import java.io.Serializable;

@@ -1,5 +1,6 @@
 package com.vwmin.coolq.pixiv;
 
+import com.vwmin.coolq.pixiv.entities.Illusts;
 import picocli.CommandLine;
 
 import java.util.concurrent.Callable;

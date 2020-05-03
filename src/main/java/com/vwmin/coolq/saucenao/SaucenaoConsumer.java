@@ -1,6 +1,7 @@
 package com.vwmin.coolq.saucenao;
 
 import com.vwmin.coolq.pixiv.*;
+import com.vwmin.coolq.pixiv.entities.Illust;
 import com.vwmin.terminalservice.MessageSegmentBuilder;
 import com.vwmin.terminalservice.entity.MessageSegment;
 import lombok.extern.slf4j.Slf4j;

@@ -1,9 +1,8 @@
 package com.vwmin.coolq.pixiv.subscribe;
 
 import com.vwmin.coolq.common.Utils;
-import com.vwmin.coolq.pixiv.Illust;
+import com.vwmin.coolq.pixiv.entities.Illust;
 import com.vwmin.coolq.pixiv.IllustUtils;
-import com.vwmin.coolq.pixiv.Illusts;
 import com.vwmin.terminalservice.CQClientApi;
 import com.vwmin.terminalservice.MessageSegmentBuilder;
 import com.vwmin.terminalservice.entity.SendEntity;
@@ -30,19 +29,15 @@ public class PostNewWorks implements ApplicationListener<NewWorksEvent> {
     private final
     CQClientApi api;
 
-    private final List<Long> subscribers;
-
     public PostNewWorks(CQClientApi api) {
         this.api = api;
-        subscribers = new ArrayList<>();
-
-        subscribe(1903215898L);
     }
 
 
     @Override
     public void onApplicationEvent(NewWorksEvent event) {
         List<Illust> illusts = event.getIllusts();
+        Long who = event.getUserId();
 
 
         try {
@@ -54,11 +49,9 @@ public class PostNewWorks implements ApplicationListener<NewWorksEvent> {
                     .image(genFileName(illust), getMetaSinglePage(illust))
                     .plainText("\n"));
 
-            subscribers.forEach((who) -> {
-                api.sendPrivateMsg(new SendEntity.PrivateSendEntity(who, msgBuilder.build()));
-            });
+            api.sendPrivateMsg(new SendEntity.PrivateSendEntity(who, msgBuilder.build()));
         } catch (IOException e) {
-            log.warn("推送新作失败 >>> " + e.getMessage());
+            log.warn("下载新作失败: " + e.getMessage());
             e.printStackTrace();
 
             Long me = 1903215898L;
@@ -69,7 +62,4 @@ public class PostNewWorks implements ApplicationListener<NewWorksEvent> {
 
     }
 
-    public void subscribe(Long userId){
-        subscribers.add(userId);
-    }
 }

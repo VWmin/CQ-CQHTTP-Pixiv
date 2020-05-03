@@ -1,5 +1,6 @@
 package com.vwmin.coolq.pixiv;
 
+import com.vwmin.coolq.pixiv.entities.Illust;
 import com.vwmin.terminalservice.MessageSegmentBuilder;
 import com.vwmin.terminalservice.entity.MessageSegment;
 

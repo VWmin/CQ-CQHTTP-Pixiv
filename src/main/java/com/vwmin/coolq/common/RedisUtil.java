@@ -2,6 +2,7 @@ package com.vwmin.coolq.common;
 
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.SetOperations;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -32,36 +33,58 @@ public class RedisUtil {
     }
 
 
-    public static void add2Set(String key, Object... values) {
+    public static void add2Set(String cache, String key, Object... values) {
         SetOperations<String, Object> setOperations = redisTemplate.opsForSet();
-        setOperations.add(key, values);
+        setOperations.add(realKey(cache, key), values);
     }
 
-    public static Boolean isMember(String key, Object o) {
+    public static Boolean isMember(String cache, String key, Object o) {
         SetOperations<String, Object> setOperations = redisTemplate.opsForSet();
-        return setOperations.isMember(key, o);
+        return setOperations.isMember(realKey(cache, key), o);
+    }
+
+    public static Set<Object> members(String cache, String key){
+        SetOperations<String, Object> setOperations = redisTemplate.opsForSet();
+        return setOperations.members(realKey(cache, key));
+    }
+
+    public static void removeMember(String cache, String key, Object... values){
+        SetOperations<String, Object> ops = redisTemplate.opsForSet();
+        ops.remove(realKey(cache, key), values);
     }
 
     public static void increase(String cacheName, String key){
-        String key_ = cacheName+ ":" +key;
-        redisTemplate.opsForValue().increment(key_);
+        redisTemplate.opsForValue().increment(realKey(cacheName, key));
     }
 
-    public static Long getLong(String cacheName, String key ) {
-        String key_ = cacheName+ ":" +key;
-        return (Long) redisTemplate.opsForValue().get(key_);
+    public static void put(String cache, String key, String value){
+        ValueOperations<String, Object> ops = redisTemplate.opsForValue();
+        ops.set(realKey(cache, key), value);
+    }
+
+    public static Object get(String cacheName, String key ) {
+        return redisTemplate.opsForValue().get(realKey(cacheName, key));
+    }
+
+    public static Boolean remove(String cache, String key){
+        return redisTemplate.delete(realKey(cache, key));
     }
 
     public static void setToZero(String cacheName, String key){
-        String key_ = cacheName+ ":" +key;
-        redisTemplate.opsForValue().set(key_, 0);
+        redisTemplate.opsForValue().set(realKey(cacheName, key), 0);
     }
 
-    public static Map<String, Long> kvMap(String cacheName){
+    public static Map<String, Object> getCache(String cacheName){
         Set<String> keys = redisTemplate.keys(cacheName + "*");
-        Map<String, Long> map = new HashMap<>();
-        assert keys != null;
-        keys.forEach((key)->map.put(key, getLong(cacheName, key)));
+        Map<String, Object> map = new HashMap<>();
+        keys.forEach((keyWithCacheName)->{
+            String key = keyWithCacheName.replace(cacheName + ":", "");
+            map.put(key, get(cacheName, key));
+        });
         return map;
+    }
+
+    private static String realKey(String cache, String key){
+        return cache + ":" + key;
     }
 }
