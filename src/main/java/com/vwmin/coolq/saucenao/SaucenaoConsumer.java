@@ -5,6 +5,7 @@ import com.vwmin.coolq.pixiv.entities.Illust;
 import com.vwmin.terminalservice.MessageSegmentBuilder;
 import com.vwmin.terminalservice.entity.MessageSegment;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.io.IOException;
 import java.util.List;
@@ -18,12 +19,10 @@ import java.util.List;
 @Slf4j
 public class SaucenaoConsumer {
     private final SaucenaoEntity sauceNAOEntity;
-    private final Long userId;
     private final PixivApi pixivApi;
 
-    public SaucenaoConsumer(SaucenaoEntity saucenaoEntity, Long userId, PixivApi api){
+    public SaucenaoConsumer(SaucenaoEntity saucenaoEntity, PixivApi api){
         this.sauceNAOEntity = saucenaoEntity;
-        this.userId = userId;
         this.pixivApi = api;
     }
 
@@ -56,16 +55,24 @@ public class SaucenaoConsumer {
         }
 
         // 通用
-        String fileName = timeStamp+imageType;
-        String fileUrl = one.getHeader().getThumbnail();
-
+        String fileName;
+        String fileUrl;
 
         if(one.getHeader().getIndex_id() == 5){ //Pixiv
-            Illust illustById = pixivApi.getIllustById(one.getData().getPixiv_id());
-            fileName = IllustUtils.genFileName(illustById);
-            fileUrl = IllustUtils.getMetaSinglePage(illustById);
-            new DownloadTask(illustById).run();
+            try{
+                Illust illustById = pixivApi.getIllustById(one.getData().getPixiv_id()).getIllust();
+                fileName = IllustUtils.genFileName(illustById);
+                fileUrl = IllustUtils.getMetaSinglePage(illustById);
+                new PixivDownloadTask(illustById).run();
+            }catch (HttpClientErrorException.NotFound e){
+                fileName = timeStamp+imageType;
+                fileUrl = one.getHeader().getThumbnail();
+            }
+        }else{
+            fileName = timeStamp+imageType;
+            fileUrl = one.getHeader().getThumbnail();
         }
+
 
 
         if(similarity < 50){
@@ -80,9 +87,6 @@ public class SaucenaoConsumer {
             }
         }
 
-//        if(short_remaining<5){
-//            builder.addTextSegment("\nwarn >> 30s内剩余次数："+short_remaining);
-//        }
         if(long_remaining < 20){
             builder.plainText("\nwarn >> 24h内剩余次数："+long_remaining);
         }

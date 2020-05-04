@@ -18,7 +18,7 @@ import static com.vwmin.coolq.pixiv.IllustUtils.getMetaSinglePage;
  * @date 2020/4/19 12:12
  */
 @Slf4j
-public class DownloadTask implements Runnable{
+public class PixivDownloadTask implements Runnable{
     private final Header HEADER = new BasicHeader("Referer", "https://app-api.pixiv.net/");
     private final long id;
     private final String filename;
@@ -26,11 +26,11 @@ public class DownloadTask implements Runnable{
     private final Semaphore semaphore;
 
 
-    public DownloadTask(Illust illust){
+    public PixivDownloadTask(Illust illust){
         this(illust, null);
     }
 
-    public DownloadTask(Illust illust, Semaphore semaphore){
+    public PixivDownloadTask(Illust illust, Semaphore semaphore){
         this.id = illust.getId();
         this.filename = genFileName(illust);
         this.url = getMetaSinglePage(illust);

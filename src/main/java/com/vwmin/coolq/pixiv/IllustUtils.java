@@ -74,7 +74,7 @@ public class IllustUtils {
 
             cnt++;
             if (!ImageUtils.isExist(filename)) {
-                pool.execute(new DownloadTask(illust, semaphore));
+                pool.execute(new PixivDownloadTask(illust, semaphore));
             } else {
                 log.info("file exist, passed >> " + illust.getId());
                 semaphore.release();

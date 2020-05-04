@@ -33,7 +33,7 @@ public class SaucenaoCommandController implements Reply {
     public ReplyEntity call(PostEntity postEntity) {
         try{
             SaucenaoEntity call = command.call();
-            List<MessageSegment> one = new SaucenaoConsumer(call, postEntity.getUser_id(), pixivApi).mostly();
+            List<MessageSegment> one = new SaucenaoConsumer(call, pixivApi).mostly();
             return new ReplyEntity(one);
         }catch (Exception e){
             e.printStackTrace();

@@ -2,6 +2,7 @@ package com.vwmin.coolq.pixiv;
 
 import com.vwmin.coolq.pixiv.entities.Illust;
 import com.vwmin.coolq.pixiv.entities.Illusts;
+import com.vwmin.coolq.pixiv.entities.SingleIllust;
 import com.vwmin.coolq.pixiv.entities.User;
 import com.vwmin.restproxy.annotations.Body;
 import com.vwmin.restproxy.annotations.GET;
@@ -18,7 +19,7 @@ public interface PixivApi {
     Illusts getRank(@Query("mode") String mode);
 
     @GET("/illust/detail")
-    Illust getIllustById(@Query("illustId") Integer id);
+    SingleIllust getIllustById(@Query("illustId") Integer id);
 
     @GET("/user/detail")
     User getUserById(@Query("userId") Integer id);
@@ -37,5 +38,5 @@ public interface PixivApi {
     Illusts getNewWorks(@Query("username") String username);
 
     @POST("/login")
-    void login(@Body("username") String username, @Body("password") String password);
+    void login(@Query("username") String username, @Query("password") String password);
 }
