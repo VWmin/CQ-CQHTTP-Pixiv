@@ -9,6 +9,7 @@ import javax.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author vwmin
@@ -57,9 +58,13 @@ public class RedisUtil {
         redisTemplate.opsForValue().increment(realKey(cacheName, key));
     }
 
-    public static void put(String cache, String key, String value){
+    public static void put(String cache, String key, Object value){
         ValueOperations<String, Object> ops = redisTemplate.opsForValue();
         ops.set(realKey(cache, key), value);
+    }
+
+    public static void put(String cache, String key, Object value, long ttlSeconds) {
+        redisTemplate.opsForValue().set(realKey(cache, key), value, ttlSeconds, TimeUnit.SECONDS);
     }
 
     public static Object get(String cacheName, String key ) {
